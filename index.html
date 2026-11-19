@@ -35,9 +35,10 @@ h1{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.14em;text-a
 #cal .ic-clk,#form.routine #cal .ic-cal{display:none}
 #form.routine #cal .ic-clk{display:block}
 #form.routine #cal{color:var(--accent)}
-input[type=text],input[type=url],input[type=date],input[type=time]{padding:10px 12px;font:inherit;color:var(--ink);
+input[type=text],input[type=url],input[type=date],input[type=time],textarea{padding:10px 12px;font:inherit;color:var(--ink);
   background:var(--surface);border:1px solid var(--line);border-radius:8px;min-width:0;width:100%}
-input:focus,button:focus-visible{outline:none;border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 9%,transparent)}
+textarea{resize:none;overflow:hidden;display:block;line-height:1.4;max-height:9em}
+input:focus,textarea:focus,button:focus-visible{outline:none;border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 9%,transparent)}
 button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);
   border-radius:8px;padding:8px 14px}
 button.primary{background:var(--surface);color:var(--ink);border-color:var(--accent);font-weight:600}
@@ -54,7 +55,7 @@ li input[type=checkbox]:hover{border-color:var(--accent)}
 li input[type=checkbox]:checked{border-color:var(--accent);background:radial-gradient(circle,var(--accent) 0 38%,transparent 42%),var(--surface)}
 li .body{flex:1;min-width:0}
 li{cursor:default}
-li .t{word-break:break-word;cursor:default}
+li .t{word-break:break-word;cursor:default;white-space:pre-line}
 li.done .t{color:color-mix(in srgb,var(--ink) 75%,transparent);text-decoration:line-through}
 .meta{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid var(--line)}
 .datebox{position:relative;display:block;width:100%}
@@ -86,7 +87,7 @@ li.done .t{color:color-mix(in srgb,var(--ink) 75%,transparent);text-decoration:l
 li.hasdate{padding-top:30px}
 .due{position:absolute;top:8px;left:16px;display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);line-height:1}
 .wd{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;
-  background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--ink);border:1px solid color-mix(in srgb,var(--accent) 55%,var(--line));font-size:10px;font-weight:600;line-height:1}
+  background:transparent;color:var(--muted);border:0;font-size:10px;font-weight:600;line-height:1}
 .meta a{display:block;color:var(--accent-text);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lrow{display:flex;align-items:center;gap:8px}
 .lrow a{flex:1;min-width:0}
@@ -108,7 +109,7 @@ li.hasdate{padding-top:30px}
 .editbox .btns{display:flex;gap:6px}
 .empty{padding:28px 14px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
 /* iPhone では、16px未満の入力欄をタップすると画面が拡大されるので、タッチ端末では16pxにする */
-@media (pointer:coarse){input,#form input,li input{font-size:16px!important}}
+@media (pointer:coarse){input,textarea,#form input,li input,.dm textarea{font-size:16px!important}}
 #list > section{margin-bottom:24px;display:none}
 #list > section.cur{display:block}
 /* 横幅が広いときは、4つのグループを横に並べて全部見せる(下のバーは使わない) */
@@ -187,7 +188,7 @@ body.cal main{max-width:1180px;padding-bottom:24px}
 .cwd,.cgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
 .cwd{margin-top:12px;text-align:center;font-size:12px;color:var(--muted)}
 .cwd span{justify-self:center;width:22px;height:22px;line-height:20px;box-sizing:border-box;border:1px solid transparent;border-radius:50%;text-align:center}
-.cwd span.now{color:var(--ink);background:color-mix(in srgb,var(--accent) 16%,var(--surface));border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.cwd span.now{color:var(--ink);font-weight:700}
 .cgrid{flex:none;grid-auto-rows:96px;border:1px solid #9ea1a3;border-radius:12px;background:var(--surface)}
 .cc:first-child{border-top-left-radius:12px}
 .cc:nth-child(7){border-top-right-radius:12px}
@@ -196,19 +197,21 @@ body.cal main{max-width:1180px;padding-bottom:24px}
 .cc{min-width:0;padding:4px 5px 6px;position:relative;border-right:1px solid #9ea1a3;border-bottom:1px solid #9ea1a3}
 .cc:nth-child(7n){border-right:0}
 .cc.lastrow{border-bottom:0}
-.cc.out{background:color-mix(in srgb,var(--bg) 70%,transparent)}
-.cc.out .cn{opacity:.45}
+.cc.out{background:color-mix(in srgb,#9fa0a0 30%,transparent)}
+.cc.out .cn{opacity:.8}
 .cnrow{display:flex;align-items:center;gap:4px;min-width:0}
 .hn{font-size:9px;color:var(--accent-text);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .cc.hol .cn{color:var(--accent-text)}
-.cc.out .hn{opacity:.45}
-@media (max-width:700px){.hn{display:none}}
+.cc.out .hn{opacity:.8}
+.cc.out.hol .cn{opacity:.8}
+@media (max-width:700px){.hn{display:none}.cgrid{grid-auto-rows:68px}}
 .ci{display:flex;flex-direction:column;gap:3px;min-width:0}
 .cn{align-self:flex-start;width:20px;height:20px;line-height:18px;padding:0;box-sizing:border-box;text-align:center;font-size:12px;color:var(--muted);border:1px solid transparent;border-radius:999px}
 .cc.today .cn{color:var(--ink);font-weight:700;background:color-mix(in srgb,var(--accent) 16%,var(--surface));border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
 .chip{display:block;width:100%;min-width:0;text-align:left;padding:1px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:11.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .cc .chip{background:var(--bg)}
 .chip:hover{border-color:var(--accent)}
+.cc .chip.hl,.chip.hl{background:color-mix(in srgb,var(--accent) 30%,var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--surface))}
 .chip.done{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--accent)}
 .cstrip .chip{width:auto;max-width:100%}
 .more{align-self:flex-start;height:16px;padding:0 4px;border:0;background:none;color:var(--muted);font-size:11px;cursor:pointer}
@@ -218,6 +221,24 @@ body.cal main{max-width:1180px;padding-bottom:24px}
 .cc.open .ci{position:absolute;top:0;left:0;width:100%;box-sizing:border-box;min-height:100%;padding:4px 5px 6px;background:var(--surface);border:1px solid var(--accent);border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
 .cc.open:nth-child(7n+4) .ci,.cc.open:nth-child(7n+5) .ci,.cc.open:nth-child(7n+6) .ci,.cc.open:nth-child(7n) .ci{left:auto;right:0}
 @media (max-width:700px){.cc.open .ci{width:172px}}
+.dm{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.35);display:flex;align-items:flex-start;justify-content:center;padding:12vh 16px 0}
+.dm .box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:min(420px,100%);display:flex;flex-direction:column;gap:6px;font-size:13px}
+.dm textarea{padding:6px 10px;font-size:13px}
+.dm button{padding:5px 12px}
+.dm .dl{font-size:12px;color:var(--muted)}
+.dm .row{display:flex;gap:8px;justify-content:flex-end}
+.cc{cursor:pointer}
+li{-webkit-touch-callout:none}
+li .hlbtn{position:absolute;right:6px;top:6px;width:10px;height:10px;padding:0;border:0;border-radius:50%;background:color-mix(in srgb,var(--accent) 30%,transparent);cursor:pointer}
+li .hlbtn::before{content:"";position:absolute;inset:-6px}
+li.hl{background:color-mix(in srgb,var(--accent) 30%,var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--surface))}
+li.hl .hlbtn{background:rgba(255,255,255,.7)}
+.dm.near{background:transparent;display:block;padding:0}
+.dm.near .box{position:fixed;width:min(260px,calc(100vw - 24px));box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.dm .q{font-weight:600}
+.dm .qt{color:var(--muted);white-space:pre-line;word-break:break-word;max-height:4.2em;overflow:hidden}
+.dm .row{display:flex;gap:6px;justify-content:flex-end;margin-top:4px}
+button.danger{background:var(--surface);color:var(--danger);border-color:var(--danger);font-weight:600}
 </style>
 </head>
 <body>
@@ -225,7 +246,7 @@ body.cal main{max-width:1180px;padding-bottom:24px}
   <div class="topbar"><button type="button" id="viewbtn" role="switch" aria-checked="false" aria-pressed="false" aria-label="カレンダー表示" title="カレンダーで見る"><svg class="i1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="7" rx="2.2"/><rect x="3.5" y="13.5" width="17" height="7" rx="2.2"/></svg><svg class="i2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button></div>
 
   <div id="form">
-    <input type="text" id="input" placeholder="" autocomplete="off" aria-label="新しいタスク">
+    <textarea id="input" rows="1" placeholder="" autocomplete="off" aria-label="新しいタスク"></textarea>
     <div class="row">
       <label><input type="text" inputmode="url" id="link" placeholder="https://example.com(,区切りで5つまで)" autocomplete="off" aria-label="リンク"></label>
       <div class="side">
@@ -270,6 +291,12 @@ for (const t of todos) {
 }
 
 const $ = (id) => document.getElementById(id);
+// Safari は、変換の確定のEnterでも isComposing=false で keydown が来る(compositionend が先に来る)ので、直前の確定も変換中として扱う
+let lastCompEnd = 0;
+document.addEventListener("compositionend", () => { lastCompEnd = Date.now(); }, true);
+const IME = (e) => e.isComposing || e.keyCode === 229 || Date.now() - lastCompEnd < 120;
+const NL = (e, el) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && !IME(e)) { e.preventDefault(); const a = el.selectionStart, b = el.selectionEnd; el.setRangeText("\n", a, b, "end"); el.dispatchEvent(new Event("input")); return true; } return false; };
+const COARSE = () => matchMedia("(pointer:coarse)").matches;
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch (e) {} };
 
 // リンクを検証して正規化する。空文字は ""、不正なら null を返す。
@@ -595,7 +622,7 @@ const GROUPS = [
   { key: "done",  label: "Done" },
 ];
 
-// 完了 → done、期限切れと今日 → today、明日から7日以内 → week、それ以外と日付なし → later
+// 完了 → done、期限切れと今日 → today、明日から今週の日曜まで(月曜始まり) → week、それ以外と日付なし → later
 function groupOf(t) {
   if (t.done) return "done";
   if (t.routine) return t.waiting ? "later" : "today"; // ルーティーンは、時間になるまで Later
@@ -603,7 +630,7 @@ function groupOf(t) {
   if (!d) return "later";
   const today = new Date(); today.setHours(0, 0, 0, 0);
   if (d <= today) return "today";
-  const weekEnd = new Date(today); weekEnd.setDate(weekEnd.getDate() + 7);
+  const weekEnd = new Date(today); weekEnd.setDate(weekEnd.getDate() + (7 - today.getDay()) % 7); // 今週の日曜(月曜始まり)
   return d <= weekEnd ? "week" : "later";
 }
 
@@ -690,7 +717,7 @@ function makeItem(t) {
   if (editingId === t.id) {
     const box = document.createElement("div");
     box.className = "editbox";
-    const eText = document.createElement("input"); eText.type = "text"; eText.value = t.text; eText.setAttribute("aria-label", "タスク");
+    const eText = document.createElement("textarea"); eText.rows = 1; eText.value = t.text; eText.addEventListener("input", () => autoGrow(eText)); eText.setAttribute("aria-label", "タスク");
     const eDue = document.createElement("input"); eDue.type = "date"; eDue.value = (t.due || "").slice(0, 10); eDue.setAttribute("aria-label", "日付");
     const eTime = document.createElement("input"); eTime.type = "text"; eTime.value = t.routine || ""; eTime.setAttribute("aria-label", "ルーティーンの時間");
     const eLink = document.createElement("input"); eLink.type = "text"; eLink.value = t.links.join(", "); eLink.placeholder = "https://example.com(,区切りで5つまで)"; eLink.setAttribute("aria-label", "リンク");
@@ -724,16 +751,20 @@ function makeItem(t) {
     const cancel = () => { editingId = null; render(); };
     editCommit = commit;
     ng.onclick = cancel;
-    box.onkeydown = (e) => { if (e.key === "Enter" && !e.isComposing && (e.target.tagName !== "BUTTON" || e.target.classList.contains("dtext"))) { e.preventDefault(); closePicker(); commit(false); } if (e.key === "Escape") cancel(); };
+    box.onkeydown = (e) => { if (e.target === eText && NL(e, eText)) return; if (e.key === "Enter" && !IME(e) && !(e.target === eText && (e.shiftKey || COARSE())) && (e.target.tagName !== "BUTTON" || e.target.classList.contains("dtext"))) { e.preventDefault(); closePicker(); commit(false); } if (e.key === "Escape") cancel(); };
 
     btns.append(ng);
     box.append(eText, t.routine ? timeField(eTime) : dateField(eDue), eLinkWrap, msg, btns);
     body.appendChild(box);
-    setTimeout(() => { eText.focus(); eText.setSelectionRange(eText.value.length, eText.value.length); }, 0);
+    setTimeout(() => { autoGrow(eText); eText.focus(); eText.setSelectionRange(eText.value.length, eText.value.length); }, 0);
   } else {
     const sp = document.createElement("div");
     sp.className = "t"; sp.textContent = t.text;
     body.appendChild(sp);
+    if (t.hl) li.classList.add("hl");
+    const hb = document.createElement("button"); hb.type = "button"; hb.className = "hlbtn"; hb.setAttribute("aria-label", "色をつける"); hb.title = "色をつける";
+    hb.onclick = (e) => { e.stopPropagation(); if (t.hl) delete t.hl; else t.hl = true; save(); render(); };
+    li.appendChild(hb);
     // カードのどこかを1回クリックすると編集できる(チェック・リンク・矢印は除く)
     li.addEventListener("click", (e) => {
       if (editingId !== null || li.classList.contains("completing")) return;
@@ -896,7 +927,7 @@ function renderCal() {
   el.innerHTML = "";
   const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
   const chipFor = (t, label) => {
-    const b = mk("button", "chip" + (t.done ? " done" : ""), label || t.text);
+    const b = mk("button", "chip" + (t.done ? " done" : "") + (t.hl ? " hl" : ""), label || t.text);
     b.type = "button";
     b.title = t.text;
     b.onclick = () => openFromCal(t);
@@ -954,13 +985,14 @@ function renderCal() {
     // 高さは固定。3件以上の日は、2件+「他N件」にして、押すと全部を広げる
     for (const t of (list.length > 2 && !open ? list.slice(0, 2) : list)) ci.appendChild(chipFor(t));
     if (list.length > 2) {
-      const more = mk("button", "more", open ? "閉じる ▴" : `他${list.length - 2}件 ▾`);
+      const more = mk("button", "more", open ? "Close ▴" : "etc ▾");
       more.type = "button";
       more.setAttribute("aria-expanded", String(open));
       more.onclick = (e) => { e.stopPropagation(); calOpenKey = open ? null : key; renderCal(); };
       ci.appendChild(more);
     }
     cell.appendChild(ci);
+    cell.addEventListener("click", (e) => { if (e.target.closest(".chip,.more")) return; openDayAdd(key); });
     grid.appendChild(cell);
   }
   el.appendChild(grid);
@@ -982,6 +1014,30 @@ function renderCal() {
     for (const t of nodate) strip.appendChild(chipFor(t));
     el.appendChild(strip);
   }
+}
+
+function openDayAdd(key) {
+  if (document.querySelector(".dm")) return;
+  const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  const m = mk("div", "dm"); const box = mk("div", "box");
+  const d = new Date(key + "T00:00:00");
+  box.appendChild(mk("div", "dl", `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`));
+  const ta = document.createElement("textarea"); ta.rows = 1; ta.setAttribute("aria-label", "タスク");
+  ta.addEventListener("input", () => autoGrow(ta));
+  const close = () => m.remove();
+  const add = () => {
+    const text = ta.value.trim(); if (!text) { close(); return; }
+    todos.push({ id: Date.now() + Math.random(), text, done: false, due: key, links: [] });
+    save(); close(); render();
+  };
+  m.onclick = (e) => { if (e.target === m) add(); }; // 外側を押すと、入力があれば追加して閉じる
+  ta.onkeydown = (e) => {
+    if (NL(e, ta)) return;
+    if (e.key === "Escape") close();
+    if (e.key === "Enter" && !IME(e) && !e.shiftKey && !COARSE()) { e.preventDefault(); add(); }
+  };
+  box.append(ta); m.appendChild(box); document.body.appendChild(m);
+  ta.focus();
 }
 
 function render() {
@@ -1051,7 +1107,7 @@ function addTodo(keepBlur) {
   }
   todos.push(t);
   current = groupOf(t); // 追加したタスクが見えるグループに切り替える
-  $("input").value = ""; setDue(todayStr()); $("link").value = ""; setRoutine(false);
+  $("input").value = ""; autoGrow($("input")); setDue(todayStr()); $("link").value = ""; setRoutine(false);
   save(); render();
   if (!keepBlur) $("input").focus();
 }
@@ -1070,19 +1126,24 @@ $("rt").onclick = () => setRoutine(!$("form").classList.contains("routine"));
 keepCaretAfterComma($("link"));
 // 日付ボタンにフォーカスがある状態(日付を選んだ直後など)で Enter を押したら、そのまま追加する。
 $("form").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.isComposing && e.target.classList && e.target.classList.contains("dtext")) {
+  if (e.key === "Enter" && !IME(e) && e.target.classList && e.target.classList.contains("dtext")) {
     e.preventDefault(); closePicker(); addTodo();
   }
 });
 for (const id of ["input", "due", "link", "rtime"]) {
   $(id).addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); addTodo(); }
+    if (e.key === "Enter" && !IME(e)) {
+      if (id === "input" && (NL(e, $("input")) || e.shiftKey || COARSE())) return; // 改行
+      e.preventDefault(); addTodo();
+    }
   });
 }
 
 // iPhone のキーボード上のチェック(完了)で入力を閉じたときも追加する。
 // ページ内のタップ直後や、別の入力欄への移動(▲▼)のときは対象外。
 let lastTouch = 0;
+function autoGrow(el) { el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight + 2, el.clientHeight && parseFloat(getComputedStyle(el).maxHeight) || 9999) + "px"; el.style.overflowY = el.scrollHeight > parseFloat(getComputedStyle(el).maxHeight) ? "auto" : "hidden"; }
+$("input").addEventListener("input", () => autoGrow($("input")));
 document.addEventListener("touchstart", () => { lastTouch = Date.now(); }, { passive: true, capture: true });
 $("input").addEventListener("blur", (e) => {
   if (!matchMedia("(pointer:coarse)").matches) return;
@@ -1152,7 +1213,57 @@ function endDrag(e, cancel) {
 }
 document.addEventListener("pointerup", (e) => endDrag(e, false));
 document.addEventListener("pointercancel", (e) => endDrag(e, true));
-document.addEventListener("click", (e) => { if (dragClickBlock) { e.stopPropagation(); e.preventDefault(); } }, true);
+document.addEventListener("click", (e) => { if (dragClickBlock && !e.target.closest(".dm")) { e.stopPropagation(); e.preventDefault(); } }, true);
+
+// カードを長押し(約0.7秒、動かさない)すると、削除の確認を出す
+{
+  let lp = null;
+  const clear = () => { if (lp) { clearTimeout(lp.timer); lp = null; } };
+  $("list").addEventListener("pointerdown", (e) => {
+    clear();
+    if (view === "cal" || (e.pointerType === "mouse" && e.button !== 0)) return;
+    const li = e.target.closest("li");
+    if (!li || li.classList.contains("editing") || li.classList.contains("completing")) return;
+    if (e.target.closest("a, button, input, textarea, .picker")) return;
+    const d = lp = { id: e.pointerId, x: e.clientX, y: e.clientY, li };
+    d.timer = setTimeout(() => {
+      lp = null;
+      if (drag) { const dd = drag; clearTimeout(dd.timer); drag = null; document.body.classList.remove("dragging"); dd.li.classList.remove("dragging"); dd.li.style.transform = ""; render(); }
+      dragClickBlock = true; setTimeout(() => { dragClickBlock = false; }, 400);
+      const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
+      confirmDelete(li.dataset.id);
+    }, 700);
+  });
+  document.addEventListener("pointermove", (e) => {
+    if (lp && e.pointerId === lp.id && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 8) clear();
+  });
+  document.addEventListener("pointerup", clear);
+  document.addEventListener("pointercancel", clear);
+  $("list").addEventListener("contextmenu", (e) => { if (e.pointerType === "touch") e.preventDefault(); });
+}
+function confirmDelete(id) {
+  const t = todos.find(x => String(x.id) === String(id));
+  if (!t || document.querySelector(".dm")) return;
+  const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  const m = mk("div", "dm"), box = mk("div", "box"), row = mk("div", "row");
+  const cl = mk("button", "ghost", "Close"); cl.type = "button";
+  const del = mk("button", "danger", "Delete"); del.type = "button";
+  const close = () => m.remove();
+  cl.onclick = close; m.onclick = (e) => { if (e.target === m) close(); };
+  del.onclick = () => { todos = todos.filter(x => String(x.id) !== String(id)); save(); close(); render(); };
+  m.onkeydown = (e) => { if (e.key === "Escape") close(); else if (e.key === "Enter" && !IME(e)) { e.preventDefault(); del.click(); } };
+  row.append(cl, del);
+  box.append(mk("div", "q", "Delete?"), mk("div", "qt", t.text), row);
+  m.appendChild(box); m.classList.add("near"); document.body.appendChild(m); del.focus();
+  const cur = [...document.querySelectorAll("#list li")].find(x => x.dataset.id === String(id));
+  if (cur) {
+    const r = cur.getBoundingClientRect(), bh = box.offsetHeight, bw = box.offsetWidth;
+    const left = Math.max(12, Math.min(r.left + r.width / 2 - bw / 2, innerWidth - bw - 12));
+    let top = r.bottom + 6;
+    if (top + bh > innerHeight - 8) top = Math.max(8, r.top - bh - 6);
+    box.style.left = left + "px"; box.style.top = top + "px";
+  } else { m.classList.remove("near"); }
+}
 
 // カードやボタンのない背景をクリックしたら、本文の入力欄にカーソルを移す(文字を選択しているときは除く)
 document.addEventListener("click", (e) => {
@@ -1169,7 +1280,7 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { if (calOpenKey) { calOpenKey = null; renderCal(); } else setView("list"); }
     return;
   }
-  if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+  if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || IME(e)) return;
   const t = e.target;
   if (t.closest && t.closest("input, textarea, select, [contenteditable], li.editing, .picker")) return;
   if (document.querySelector("li.editing, .picker")) return;
@@ -1196,6 +1307,28 @@ document.querySelector(".bar").onclick = (e) => {
   current = b.dataset.g;
   render();
 };
+
+// 横スワイプ: 一覧ではグループ、カレンダーでは月を切り替える
+{
+  let sx = 0, sy = 0, st = 0, ok = false;
+  document.addEventListener("touchstart", (e) => {
+    const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now();
+    ok = e.touches.length === 1 && !document.querySelector(".dm") && editingId === null && !(e.target.closest && e.target.closest("input,textarea,.popup,.picker"));
+  }, { passive: true });
+  document.addEventListener("touchend", (e) => {
+    if (!ok || drag) return;
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6 || Date.now() - st > 700) return;
+    const dir = dx < 0 ? 1 : -1;
+    if (document.body.classList.contains("cal")) {
+      calOpenKey = null; calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + dir, 1); renderCal();
+    } else if (matchMedia("(max-width:640px)").matches) {
+      const i = GROUPS.findIndex(g => g.key === current) + dir;
+      if (i < 0 || i >= GROUPS.length) return;
+      current = GROUPS[i].key; render();
+    }
+  }, { passive: true });
+}
 
 // 開いたまま日付が変わったとき、タブに戻ったときに表示を更新する
 let lastDay = todayStr();
