@@ -204,7 +204,8 @@ body.cal main{max-width:1180px;padding-bottom:24px}
 .cc.hol .cn{color:var(--accent-text)}
 .cc.out .hn{opacity:.8}
 .cc.out.hol .cn{opacity:.8}
-@media (max-width:700px){.hn{display:none}.cgrid{grid-auto-rows:68px}}
+@media (max-width:700px){.hn{display:none}.cgrid{grid-auto-rows:78px}
+}
 .ci{display:flex;flex-direction:column;gap:3px;min-width:0}
 .cn{align-self:flex-start;width:20px;height:20px;line-height:18px;padding:0;box-sizing:border-box;text-align:center;font-size:12px;color:var(--muted);border:1px solid transparent;border-radius:999px}
 .cc.today .cn{color:var(--ink);font-weight:700;background:color-mix(in srgb,var(--accent) 16%,var(--surface));border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
@@ -220,7 +221,13 @@ body.cal main{max-width:1180px;padding-bottom:24px}
 .cc.open{z-index:6}
 .cc.open .ci{position:absolute;top:0;left:0;width:100%;box-sizing:border-box;min-height:100%;padding:4px 5px 6px;background:var(--surface);border:1px solid var(--accent);border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
 .cc.open:nth-child(7n+4) .ci,.cc.open:nth-child(7n+5) .ci,.cc.open:nth-child(7n+6) .ci,.cc.open:nth-child(7n) .ci{left:auto;right:0}
-@media (max-width:700px){.cc.open .ci{width:172px}}
+@media (max-width:700px){.cc.open .ci{width:172px}
+  .cc{padding:3px 3px 4px}
+  .ci{gap:2px}
+  .chip{font-size:8.5px;line-height:1.15;padding:0 3px;border-radius:3px}
+  .more{height:12px;padding:0 2px;font-size:9px}
+}
+
 .dm{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.35);display:flex;align-items:flex-start;justify-content:center;padding:12vh 16px 0}
 .dm .box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:min(420px,100%);display:flex;flex-direction:column;gap:6px;font-size:13px}
 .dm textarea{padding:6px 10px;font-size:13px}
@@ -980,11 +987,12 @@ function renderCal() {
     if (hol) { cell.classList.add("hol"); cell.title = hol; nrow.appendChild(mk("span", "hn", hol)); }
     ci.appendChild(nrow);
     const list = (byDate[key] || []).slice().sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0));
-    const open = calOpenKey === key && list.length > 2;
+    const LIM = matchMedia("(max-width:700px)").matches ? 3 : 2; // iPhone は3件まで、Mac は2件まで
+    const open = calOpenKey === key && list.length > LIM;
     if (open) cell.classList.add("open");
     // 高さは固定。3件以上の日は、2件+「他N件」にして、押すと全部を広げる
-    for (const t of (list.length > 2 && !open ? list.slice(0, 2) : list)) ci.appendChild(chipFor(t));
-    if (list.length > 2) {
+    for (const t of (list.length > LIM && !open ? list.slice(0, LIM) : list)) ci.appendChild(chipFor(t));
+    if (list.length > LIM) {
       const more = mk("button", "more", open ? "Close ▴" : "etc ▾");
       more.type = "button";
       more.setAttribute("aria-expanded", String(open));
