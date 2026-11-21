@@ -118,15 +118,21 @@ li.hasdate{padding-top:30px}
   #form{width:100%;max-width:640px;margin-left:auto;margin-right:auto;flex:none}
   #list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;align-items:stretch}
   #list > section,#list > section.cur{display:block;margin-bottom:0;padding:0 16px}
-  #list > section:first-child{padding-left:0}
-  #list > section:last-child{padding-right:0}
   /* グループの境界線 */
   #list > section{position:relative}
   /* 線は、見出しの下(カードが始まる高さ)から、画面の下まで */
-  #list > section + section::before{content:"";position:absolute;left:0;top:26px;bottom:0;width:.5px;background:#9ea1a3}
+  /* 縦線は、各グループの左側と、いちばん右のグループの右端にも引く */
+  #list > section,#list > section.cur{background:linear-gradient(#9ea1a3,#9ea1a3) left 26px / .5px calc(100% - 26px) no-repeat}
+  #list{position:relative}
+  #list::after{content:"";position:absolute;right:0;top:26px;bottom:0;width:1px;background:rgba(158,161,163,.5);pointer-events:none}
   .bar{display:none}
   main{padding-bottom:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
-  #list{flex:1}
+  #list{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
+  /* カードが画面に収まらないときは、グループごとにスクロール。カード作成ボックスは動かさない */
+  body:not(.cal) main{height:100vh;height:100dvh;min-height:0;overflow:hidden}
+  #list > section,#list > section.cur{overflow-y:auto;min-height:0;padding-bottom:24px;scrollbar-width:none;-ms-overflow-style:none}
+  #list > section::-webkit-scrollbar{display:none}
+  #list h2{position:sticky;top:0;z-index:2;background:var(--bg);padding-bottom:8px;margin-bottom:0}
 }
 .colempty{color:var(--muted);font-size:12px;padding:8px 2px}
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--bg);padding:8px 16px calc(10px + env(safe-area-inset-bottom,0px))}
@@ -236,12 +242,19 @@ body.cal main{max-width:1180px;padding-bottom:24px}
 .dm .row{display:flex;gap:8px;justify-content:flex-end}
 .cc{cursor:pointer}
 li{-webkit-touch-callout:none}
-li .hlbtn{position:absolute;right:6px;top:6px;width:10px;height:10px;padding:0;border:0;border-radius:50%;background:color-mix(in srgb,var(--accent) 30%,transparent);cursor:pointer}
-li .hlbtn::before{content:"";position:absolute;inset:-6px}
+li{padding-right:34px}
+li .hlbtn{position:absolute;right:3px;top:3px;width:14px;height:13px;padding:0;border:0;border-radius:3px 8px 3px 3px;background:color-mix(in srgb,var(--accent) 40%,transparent);cursor:pointer}
+li .grip{position:absolute;right:2px;top:19px;width:16px;height:14px;display:flex;align-items:center;justify-content:center;color:color-mix(in srgb,var(--accent) 70%,transparent);cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
+li .grip::before{content:"";position:absolute;inset:0 -6px -8px -6px}
+li .grip svg{display:block;pointer-events:none}
+li .hlbtn::before{content:"";position:absolute;inset:-5px -5px 0 -5px}
+li:only-child .grip,section[data-g=week] .grip,section[data-g=later] .grip,li.editing .grip{display:none}
 li.hl{background:color-mix(in srgb,var(--accent) 30%,var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--surface))}
-li.hl .hlbtn{background:rgba(255,255,255,.7)}
+li.hl .hlbtn{background:color-mix(in srgb,var(--accent) 85%,transparent)}
 .dm.near{background:transparent;display:block;padding:0}
 .dm.near .box{position:fixed;width:min(260px,calc(100vw - 24px));box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:40;padding:6px 14px;border-radius:8px;background:var(--ink);color:#fff;font-size:12px;opacity:.92;pointer-events:none}
+#list a{-webkit-touch-callout:none}
 .dm .q{font-weight:600}
 .dm .qt{color:var(--muted);white-space:pre-line;word-break:break-word;max-height:4.2em;overflow:hidden}
 .dm .row{display:flex;gap:6px;justify-content:flex-end;margin-top:4px}
@@ -571,7 +584,26 @@ function openTimePicker(input, anchor) {
   el.style.top = top + "px";
   el.style.left = Math.max(8, Math.min(r.right - w, innerWidth - w - 8)) + "px";
   const onDoc = (e) => { if (!el.contains(e.target) && !anchor.contains(e.target)) closePicker(); };
-  const onKey = (e) => { if (e.key === "Escape") { closePicker(); anchor.focus(); } };
+  let buf = "";
+  const onKey = (e) => {
+    if (e.key === "Escape") { closePicker(); anchor.focus(); return; }
+    if (IME(e)) return;
+    // 数字キーでも時刻を入力できる(例: 0930)
+    if (/^\d$/.test(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      buf = buf.length >= 4 ? e.key : buf + e.key;
+      hh = Math.min(23, +(buf.length >= 2 ? buf.slice(0, 2) : buf));
+      mm = buf.length > 2 ? Math.min(59, +buf.slice(2).padEnd(2, "0")) : 0;
+      input.value = `${pad(hh)}:${pad(mm)}`; input.dispatchEvent(new Event("change")); draw();
+      return;
+    }
+    // Enter で時間を確定。Routine の入力欄なら、そのままカードも作る
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commit();
+      if (input === $("rtime")) addTodo();
+    }
+  };
   document.addEventListener("mousedown", onDoc);
   document.addEventListener("keydown", onKey);
   window.addEventListener("resize", closePicker);
@@ -772,10 +804,13 @@ function makeItem(t) {
     const hb = document.createElement("button"); hb.type = "button"; hb.className = "hlbtn"; hb.setAttribute("aria-label", "色をつける"); hb.title = "色をつける";
     hb.onclick = (e) => { e.stopPropagation(); if (t.hl) delete t.hl; else t.hl = true; save(); render(); };
     li.appendChild(hb);
+    const gp = document.createElement("div"); gp.className = "grip"; gp.title = "ドラッグで並び替え"; gp.setAttribute("aria-label", "並び替え");
+    gp.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 2h11M1.5 7h11M1.5 12h11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>';
+    li.appendChild(gp);
     // カードのどこかを1回クリックすると編集できる(チェック・リンク・矢印は除く)
     li.addEventListener("click", (e) => {
       if (editingId !== null || li.classList.contains("completing")) return;
-      if (e.target.closest("a, button, input, .picker")) return;
+      if (e.target.closest("a, button, input, .picker, .grip")) return;
       if (String(window.getSelection()).length) return; // 文字を選択しただけのとき
       editingId = t.id;
       render();
@@ -1014,14 +1049,7 @@ function renderCal() {
     el.appendChild(strip);
   }
 
-  // 日付のないタスク
-  const nodate = todos.filter(t => !t.routine && !t.done && !dueDate(t.due));
-  if (nodate.length) {
-    const strip = mk("div", "cstrip");
-    strip.appendChild(mk("span", "", "日付なし"));
-    for (const t of nodate) strip.appendChild(chipFor(t));
-    el.appendChild(strip);
-  }
+  // カレンダーの下には Routine だけを出す(日付なしのタスクは出さない)
 }
 
 function openDayAdd(key) {
@@ -1166,12 +1194,13 @@ $("list").addEventListener("pointerdown", (e) => {
   if (drag || view === "cal" || (e.pointerType === "mouse" && e.button !== 0)) return;
   const li = e.target.closest("li");
   if (!li || li.classList.contains("editing") || li.classList.contains("completing")) return;
-  if (e.target.closest("a, button, input, .picker")) return;
+  if (!e.target.closest(".grip")) return; // 三本線のところだけで並び替え(本文は選択・コピーできる)
   const ul = li.parentNode;
   if (ul.children.length < 2) return;
   if (!["today", "done"].includes(li.closest("section").dataset.g)) return; // Week・Later は日付順で固定
   const d = drag = { li, ul, id: e.pointerId, x: e.clientX, y: e.clientY, grab: 0, on: false, timer: 0, touch: e.pointerType !== "mouse" };
-  if (d.touch) d.timer = setTimeout(() => start(d), 350);
+  e.preventDefault();
+  if (d.touch) start(d);
 });
 function start(d) {
   if (drag !== d || d.on) return;
@@ -1223,6 +1252,53 @@ document.addEventListener("pointerup", (e) => endDrag(e, false));
 document.addEventListener("pointercancel", (e) => endDrag(e, true));
 document.addEventListener("click", (e) => { if (dragClickBlock && !e.target.closest(".dm")) { e.stopPropagation(); e.preventDefault(); } }, true);
 
+// リンクを長押し(約0.6秒、動かさない)すると、URLをコピーする(押した指を離しても、リンクは開かない)
+{
+  let lp = null, hold = false, pressT = 0, pressMoved = false;
+  const toast = (msg) => {
+    document.querySelectorAll(".toast").forEach(n => n.remove());
+    const n = document.createElement("div"); n.className = "toast"; n.textContent = msg; document.body.appendChild(n);
+    setTimeout(() => n.remove(), 1400);
+  };
+  const copy = async (text) => {
+    try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+    try {
+      const ta = document.createElement("textarea"); ta.value = text; ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+      document.body.appendChild(ta); ta.select(); const ok = document.execCommand("copy"); ta.remove(); return ok;
+    } catch (e) { return false; }
+  };
+  const clear = () => { if (lp) { clearTimeout(lp.timer); lp = null; } };
+  document.addEventListener("pointerdown", (e) => {
+    clear(); hold = false;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const a = e.target.closest && e.target.closest("#list a[href]");
+    if (!a) return;
+    pressT = performance.now(); pressMoved = false;
+    const d = lp = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    d.timer = setTimeout(async () => {
+      lp = null; hold = true;
+      toast(await copy(a.href) ? "Copied" : "コピーできませんでした");
+    }, 600);
+  });
+  document.addEventListener("pointermove", (e) => {
+    if (lp && e.pointerId === lp.id && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 8) { pressMoved = true; clear(); }
+  });
+  const up = () => { clear(); if (hold) setTimeout(() => { hold = false; }, 1000); };
+  document.addEventListener("pointerup", up);
+  document.addEventListener("pointercancel", up);
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest("#list a[href]");
+    if (!a) return;
+    // 長押し(0.6秒以上、動かさずに押していた)のときは開かない
+    const longPress = hold || (pressT && !pressMoved && performance.now() - pressT >= 600);
+    pressT = 0;
+    // 標準のリンク遷移は常に止め、長押しでないときだけ自前で開く
+    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+    if (!longPress) window.open(a.href, "_blank", "noopener,noreferrer");
+  }, true);
+  document.addEventListener("contextmenu", (e) => { if (e.pointerType === "touch" && e.target.closest && e.target.closest("#list a")) e.preventDefault(); });
+}
+
 // カードを長押し(約0.7秒、動かさない)すると、削除の確認を出す
 {
   let lp = null;
@@ -1232,7 +1308,7 @@ document.addEventListener("click", (e) => { if (dragClickBlock && !e.target.clos
     if (view === "cal" || (e.pointerType === "mouse" && e.button !== 0)) return;
     const li = e.target.closest("li");
     if (!li || li.classList.contains("editing") || li.classList.contains("completing")) return;
-    if (e.target.closest("a, button, input, textarea, .picker")) return;
+    if (e.target.closest("a, button, input, textarea, .picker, .grip")) return;
     const d = lp = { id: e.pointerId, x: e.clientX, y: e.clientY, li };
     d.timer = setTimeout(() => {
       lp = null;
