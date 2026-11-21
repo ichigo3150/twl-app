@@ -172,7 +172,7 @@ button.ghost{border:0;background:transparent;color:var(--muted);font-size:12px;t
 @media (prefers-reduced-motion: no-preference){ .endcaret{animation:blink 1s steps(1) infinite} }
 @keyframes blink{50%{opacity:0}}
 
-/* ---- 月のカレンダー表示(月曜はじまり) ---- */
+/* ---- 月のカレンダー表示(日曜はじまり) ---- */
 .topbar{display:flex;justify-content:flex-end;height:24px;margin:0 0 6px}
 #viewbtn{position:relative;width:52px;height:26px;padding:0;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--muted);cursor:pointer;display:block}
 #viewbtn svg{position:absolute;top:5px;width:14px;height:14px;z-index:1;transition:color .2s}
@@ -998,10 +998,10 @@ function renderCal() {
   trow.appendChild(today);
   el.appendChild(trow);
 
-  // 曜日(月曜はじまり)
+  // 曜日(日曜はじまり)
   const wd = mk("div", "cwd");
-  const todayCol = (new Date().getDay() + 6) % 7;
-  [..."月火水木金土日"].forEach((c, i) => wd.appendChild(mk("span", i === todayCol ? "now" : "", c)));
+  const todayCol = new Date().getDay();
+  [..."日月火水木金土"].forEach((c, i) => wd.appendChild(mk("span", i === todayCol ? "now" : "", c)));
   el.appendChild(wd);
 
   // 日付ごとのタスク
@@ -1013,7 +1013,7 @@ function renderCal() {
     (byDate[ymdOf(d)] = byDate[ymdOf(d)] || []).push(t);
   }
   const y = calMonth.getFullYear(), m = calMonth.getMonth();
-  const lead = (new Date(y, m, 1).getDay() + 6) % 7; // 月曜からの何日目か
+  const lead = new Date(y, m, 1).getDay(); // 日曜からの何日目か(カレンダーは日曜はじまり)
   const days = new Date(y, m + 1, 0).getDate();
   const weeks = Math.ceil((lead + days) / 7);
   const todayKey = todayStr();
