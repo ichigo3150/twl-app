@@ -770,6 +770,8 @@ function makeItem(t) {
     li.classList.add("editing");
     let commitRef = null; // 編集中のチェックは「完了」ではなく「更新を確定」にする
     cb.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); if (commitRef) commitRef(true); });
+    // iPhone: キーボードが出ている状態でも確実に反応させる(指を離した時点で確定し、あとのclickは出さない)
+    cb.addEventListener("touchend", (e) => { e.preventDefault(); e.stopPropagation(); if (commitRef) commitRef(true); }, { passive: false });
 
     // 保存する。入力に問題があれば、メッセージを出して編集を続ける(false)
     const commit = (defer) => {
