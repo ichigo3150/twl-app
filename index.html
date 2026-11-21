@@ -766,12 +766,13 @@ function makeItem(t) {
     const eLinkWrap = keepCaretAfterComma(eLink);
     const msg = document.createElement("div"); msg.style.cssText = "color:var(--danger);font-size:12px";
     const btns = document.createElement("div"); btns.className = "btns";
-    const ng = document.createElement("button"); ng.type = "button"; ng.className = "ghost"; ng.textContent = "Close";
+    const ng = document.createElement("button"); ng.type = "button"; ng.className = "ghost"; ng.textContent = "Re"; ng.setAttribute("aria-label", "内容を保存して閉じる");
     li.classList.add("editing");
-    let commitRef = null; // 編集中のチェックは「完了」ではなく「更新を確定」にする
-    cb.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); if (commitRef) commitRef(true); });
-    // iPhone: キーボードが出ている状態でも確実に反応させる(指を離した時点で確定し、あとのclickは出さない)
-    cb.addEventListener("touchend", (e) => { e.preventDefault(); e.stopPropagation(); if (commitRef) commitRef(true); }, { passive: false });
+    let commitRef = null; // 編集中のチェック: いまの内容を保存して閉じる(完了にはしない)
+    const finish = (e) => { e.preventDefault(); e.stopPropagation(); if (commitRef) commitRef(true); };
+    cb.addEventListener("click", finish);
+    // iPhone: キーボードが出ている状態でも確実に反応させる(指を離した時点で実行し、あとのclickは出さない)
+    cb.addEventListener("touchend", finish, { passive: false });
 
     // 保存する。入力に問題があれば、メッセージを出して編集を続ける(false)
     const commit = (defer) => {
@@ -795,7 +796,7 @@ function makeItem(t) {
     };
     const cancel = () => { editingId = null; render(); };
     editCommit = commit; commitRef = commit;
-    ng.onclick = cancel;
+    ng.onclick = (e) => { e.preventDefault(); commit(); }; // Re: いまの内容で保存して閉じる
     box.onkeydown = (e) => { if (e.target === eText && NL(e, eText)) return; if (e.key === "Enter" && !IME(e) && !(e.target === eText && (e.shiftKey || COARSE())) && (e.target.tagName !== "BUTTON" || e.target.classList.contains("dtext"))) { e.preventDefault(); closePicker(); commit(false); } if (e.key === "Escape") cancel(); };
 
     btns.append(ng);
