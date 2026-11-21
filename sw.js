@@ -1,6 +1,6 @@
 // アプリ本体をキャッシュして、オフラインでも開けるようにする。
 // 更新したときは VERSION を変えると、古いキャッシュが入れ替わる。
-const VERSION = "todo-v139";
+const VERSION = "todo-v142";
 const FILES = [
   "./",
   "index.html",

@@ -48,6 +48,8 @@ li{position:relative;display:flex;align-items:flex-start;gap:12px;padding:14px 1
 body.dragging,body.dragging *{cursor:grabbing!important}
 li.dragging{z-index:5;box-shadow:0 8px 24px rgba(60,70,80,.18);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));cursor:grabbing;transition:none;user-select:none;-webkit-user-select:none}
 @media (pointer:coarse){li:not(.editing){-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}}
+@media (max-width:640px){#list{touch-action:pan-y}}
+#calview{touch-action:pan-y}
 li.done{background:color-mix(in srgb,var(--surface) 55%,transparent)}
 li input[type=checkbox]{appearance:none;-webkit-appearance:none;width:18px;height:18px;margin:2px 0 0;flex:none;cursor:pointer;
   border:1.5px solid var(--muted);border-radius:50%;background:var(--surface)}
@@ -765,7 +767,8 @@ function makeItem(t) {
     const btns = document.createElement("div"); btns.className = "btns";
     const ng = document.createElement("button"); ng.type = "button"; ng.className = "ghost"; ng.textContent = "Close";
     li.classList.add("editing");
-    cb.addEventListener("click", (e) => e.preventDefault()); // 編集中は完了にしない
+    let commitRef = null; // 編集中のチェックは「完了」ではなく「更新を確定」にする
+    cb.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); if (commitRef) commitRef(true); });
 
     // 保存する。入力に問題があれば、メッセージを出して編集を続ける(false)
     const commit = (defer) => {
@@ -788,7 +791,7 @@ function makeItem(t) {
       return true;
     };
     const cancel = () => { editingId = null; render(); };
-    editCommit = commit;
+    editCommit = commit; commitRef = commit;
     ng.onclick = cancel;
     box.onkeydown = (e) => { if (e.target === eText && NL(e, eText)) return; if (e.key === "Enter" && !IME(e) && !(e.target === eText && (e.shiftKey || COARSE())) && (e.target.tagName !== "BUTTON" || e.target.classList.contains("dtext"))) { e.preventDefault(); closePicker(); commit(false); } if (e.key === "Escape") cancel(); };
 
@@ -1278,7 +1281,7 @@ document.addEventListener("click", (e) => { if (dragClickBlock && !e.target.clos
     d.timer = setTimeout(async () => {
       lp = null; hold = true;
       toast(await copy(a.href) ? "Copied" : "コピーできませんでした");
-    }, 600);
+    }, 400);
   });
   document.addEventListener("pointermove", (e) => {
     if (lp && e.pointerId === lp.id && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 8) { pressMoved = true; clear(); }
@@ -1290,7 +1293,7 @@ document.addEventListener("click", (e) => { if (dragClickBlock && !e.target.clos
     const a = e.target.closest && e.target.closest("#list a[href]");
     if (!a) return;
     // 長押し(0.6秒以上、動かさずに押していた)のときは開かない
-    const longPress = hold || (pressT && !pressMoved && performance.now() - pressT >= 600);
+    const longPress = hold || (pressT && !pressMoved && performance.now() - pressT >= 400);
     pressT = 0;
     // 標準のリンク遷移は常に止め、長押しでないときだけ自前で開く
     e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
@@ -1392,26 +1395,59 @@ document.querySelector(".bar").onclick = (e) => {
   render();
 };
 
-// 横スワイプ: 一覧ではグループ、カレンダーでは月を切り替える
+// 横スワイプ: 一覧ではグループ(指に合わせて引っ張るように動く)、カレンダーでは月を切り替える
 {
-  let sx = 0, sy = 0, st = 0, ok = false;
+  let sx = 0, sy = 0, st = 0, ok = false, axis = "", busy = false;
+  const isCal = () => document.body.classList.contains("cal");
+  const list = () => document.getElementById(isCal() ? "calview" : "list");
+  const narrowList = () => isCal() || matchMedia("(max-width:640px)").matches;
+  const neighbor = (dir) => { if (isCal()) return 1; const i = GROUPS.findIndex(g => g.key === current) + dir; return i < 0 || i >= GROUPS.length ? -1 : i; };
   document.addEventListener("touchstart", (e) => {
-    const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now();
-    ok = e.touches.length === 1 && !document.querySelector(".dm") && editingId === null && !(e.target.closest && e.target.closest("input,textarea,.popup,.picker"));
+    const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); axis = "";
+    ok = !busy && e.touches.length === 1 && !document.querySelector(".dm") && editingId === null && !(e.target.closest && e.target.closest("input,textarea,.popup,.picker,.grip"));
   }, { passive: true });
+  document.addEventListener("touchmove", (e) => {
+    if (!ok || drag || !narrowList()) return;
+    const t = e.touches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (!axis) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      axis = Math.abs(dx) > Math.abs(dy) * 1.2 ? "x" : "y";
+    }
+    if (axis !== "x") return;
+    if (e.cancelable) e.preventDefault();
+    const L = list(); if (!L) return;
+    const tx = neighbor(dx < 0 ? 1 : -1) < 0 ? dx * 0.25 : dx; // 端では重くなる
+    L.style.transition = "none";
+    L.style.transform = `translateX(${tx}px)`;
+    L.style.opacity = String(1 - Math.min(Math.abs(tx) / 500, 0.35));
+  }, { passive: false });
   document.addEventListener("touchend", (e) => {
     if (!ok || drag) return;
     const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
-    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6 || Date.now() - st > 700) return;
-    const dir = dx < 0 ? 1 : -1;
-    if (document.body.classList.contains("cal")) {
-      calOpenKey = null; calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + dir, 1); renderCal();
-    } else if (matchMedia("(max-width:640px)").matches) {
-      const i = GROUPS.findIndex(g => g.key === current) + dir;
-      if (i < 0 || i >= GROUPS.length) return;
-      current = GROUPS[i].key; render();
+    if (!narrowList() || axis !== "x") return;
+    const L = list(); if (!L) return;
+    const dir = dx < 0 ? 1 : -1, i = neighbor(dir), w = window.innerWidth;
+    const fast = Date.now() - st < 300 && Math.abs(dx) > 30;
+    if (i < 0 || !(Math.abs(dx) > w * 0.25 || fast)) { // 戻る
+      L.style.transition = "transform .22s ease, opacity .22s ease";
+      L.style.transform = ""; L.style.opacity = "";
+      return;
     }
+    busy = true;
+    L.style.transition = "transform .16s ease-in, opacity .16s ease-in";
+    L.style.transform = `translateX(${-dir * w}px)`; L.style.opacity = "0.3";
+    setTimeout(() => {
+      if (isCal()) { calOpenKey = null; calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + dir, 1); renderCal(); }
+      else { current = GROUPS[i].key; render(); }
+      L.style.transition = "none";
+      L.style.transform = `translateX(${dir * w * 0.6}px)`; L.style.opacity = "0.3";
+      void L.offsetWidth;
+      L.style.transition = "transform .24s cubic-bezier(.2,.8,.2,1), opacity .24s ease";
+      L.style.transform = ""; L.style.opacity = "";
+      setTimeout(() => { L.style.transition = ""; busy = false; }, 260);
+    }, 160);
   }, { passive: true });
+  document.addEventListener("touchcancel", () => { const L = list(); if (L && axis === "x") { L.style.transition = "transform .2s ease"; L.style.transform = ""; L.style.opacity = ""; } }, { passive: true });
 }
 
 // 開いたまま日付が変わったとき、タブに戻ったときに表示を更新する
