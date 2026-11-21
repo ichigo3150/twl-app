@@ -1397,15 +1397,27 @@ document.querySelector(".bar").onclick = (e) => {
 
 // 横スワイプ: 一覧ではグループ(指に合わせて引っ張るように動く)、カレンダーでは月を切り替える
 {
-  let sx = 0, sy = 0, st = 0, ok = false, axis = "", busy = false;
+  let sx = 0, sy = 0, st = 0, ok = false, axis = "", busy = false, vw = 390;
   const isCal = () => document.body.classList.contains("cal");
   const list = () => document.getElementById(isCal() ? "calview" : "list");
   const narrowList = () => isCal() || matchMedia("(max-width:640px)").matches;
   const neighbor = (dir) => { if (isCal()) return 1; const i = GROUPS.findIndex(g => g.key === current) + dir; return i < 0 || i >= GROUPS.length ? -1 : i; };
   document.addEventListener("touchstart", (e) => {
-    const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); axis = "";
+    const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); axis = ""; if (!busy) vw = window.innerWidth;
     ok = !busy && e.touches.length === 1 && !document.querySelector(".dm") && editingId === null && !(e.target.closest && e.target.closest("input,textarea,.popup,.picker,.grip"));
   }, { passive: true });
+  // 隣のグループを、指の動きに合わせて横から見せる(カレンダー以外)
+  let peekEl = null, peekDir = 0;
+  const peekOff = () => { if (peekEl) { peekEl.style.cssText = ""; peekEl = null; } peekDir = 0; const L = list(); if (L && !isCal()) { L.style.position = ""; document.querySelector("main").style.overflowX = ""; } };
+  const peekOn = (dir) => {
+    peekOff();
+    if (isCal()) return;
+    const i = neighbor(dir); if (i < 0) return;
+    const sec = document.querySelector('#list > section[data-g="' + GROUPS[i].key + '"]'); if (!sec) return;
+    const L = list(); L.style.position = "relative"; document.querySelector("main").style.overflowX = "clip";
+    sec.style.cssText = "display:block;position:absolute;top:0;left:" + (dir * 100) + "%;width:100%;box-sizing:border-box";
+    peekEl = sec; peekDir = dir;
+  };
   document.addEventListener("touchmove", (e) => {
     if (!ok || drag || !narrowList()) return;
     const t = e.touches[0], dx = t.clientX - sx, dy = t.clientY - sy;
@@ -1416,29 +1428,42 @@ document.querySelector(".bar").onclick = (e) => {
     if (axis !== "x") return;
     if (e.cancelable) e.preventDefault();
     const L = list(); if (!L) return;
-    const tx = neighbor(dx < 0 ? 1 : -1) < 0 ? dx * 0.25 : dx; // 端では重くなる
+    const dir = dx < 0 ? 1 : -1;
+    if (peekDir !== dir) peekOn(dir);
+    const tx = neighbor(dir) < 0 ? dx * 0.25 : dx; // 端では重くなる
     L.style.transition = "none";
     L.style.transform = `translateX(${tx}px)`;
-    L.style.opacity = String(1 - Math.min(Math.abs(tx) / 500, 0.35));
+    if (isCal()) L.style.opacity = String(1 - Math.min(Math.abs(tx) / 500, 0.35));
   }, { passive: false });
   document.addEventListener("touchend", (e) => {
     if (!ok || drag) return;
     const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
     if (!narrowList() || axis !== "x") return;
     const L = list(); if (!L) return;
-    const dir = dx < 0 ? 1 : -1, i = neighbor(dir), w = window.innerWidth;
+    const dir = dx < 0 ? 1 : -1, i = neighbor(dir), w = vw;
     const fast = Date.now() - st < 300 && Math.abs(dx) > 30;
     if (i < 0 || !(Math.abs(dx) > w * 0.25 || fast)) { // 戻る
       L.style.transition = "transform .22s ease, opacity .22s ease";
       L.style.transform = ""; L.style.opacity = "";
+      setTimeout(() => { peekOff(); L.style.transition = ""; }, 240);
       return;
     }
     busy = true;
+    if (!isCal()) { // 隣のグループがそのまま横から入ってくる
+      L.style.transition = "transform .2s ease-out";
+      L.style.transform = `translateX(${-dir * w}px)`;
+      setTimeout(() => {
+        L.style.transition = "none"; L.style.transform = "";
+        peekOff();
+        current = GROUPS[i].key; render();
+        void L.offsetWidth; L.style.transition = ""; busy = false;
+      }, 210);
+      return;
+    }
     L.style.transition = "transform .16s ease-in, opacity .16s ease-in";
     L.style.transform = `translateX(${-dir * w}px)`; L.style.opacity = "0.3";
     setTimeout(() => {
-      if (isCal()) { calOpenKey = null; calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + dir, 1); renderCal(); }
-      else { current = GROUPS[i].key; render(); }
+      calOpenKey = null; calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + dir, 1); renderCal();
       L.style.transition = "none";
       L.style.transform = `translateX(${dir * w * 0.6}px)`; L.style.opacity = "0.3";
       void L.offsetWidth;
@@ -1447,7 +1472,7 @@ document.querySelector(".bar").onclick = (e) => {
       setTimeout(() => { L.style.transition = ""; busy = false; }, 260);
     }, 160);
   }, { passive: true });
-  document.addEventListener("touchcancel", () => { const L = list(); if (L && axis === "x") { L.style.transition = "transform .2s ease"; L.style.transform = ""; L.style.opacity = ""; } }, { passive: true });
+  document.addEventListener("touchcancel", () => { const L = list(); if (L && axis === "x") { L.style.transition = "transform .2s ease"; L.style.transform = ""; L.style.opacity = ""; setTimeout(peekOff, 220); } }, { passive: true });
 }
 
 // 開いたまま日付が変わったとき、タブに戻ったときに表示を更新する
