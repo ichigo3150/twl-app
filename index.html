@@ -204,7 +204,7 @@ li .grip{position:absolute;right:2px;top:19px;width:16px;height:14px;display:fle
 li .grip::before{content:"";position:absolute;inset:0 -6px -8px -6px}
 li .grip svg{display:block;pointer-events:none}
 li .hlbtn::before{content:"";position:absolute;inset:-5px -5px 0 -5px}
-li:only-child .grip,section[data-g=week] .grip,section[data-g=later] .grip,li.editing .grip{display:none}
+li:only-child .grip,section[data-g=week] .grip,section[data-g=done] .grip,section[data-g=later] .grip,li.editing .grip{display:none}
 li.hl{background:color-mix(in srgb,var(--accent) 30%,var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--surface))}
 li.hl .meta{border-top-color:#a9adaf}
 li.hl .hlbtn{background:color-mix(in srgb,var(--accent) 85%,transparent)}
@@ -1025,6 +1025,7 @@ function render() {
     // Routine のカードは一番上(時間の早い順)
     const byDateOnly = g.key === "week" || g.key === "later"; // Week・Later は、日付順 → 同じ日なら新しく追加したものが上
     items.sort((a, b) => {
+      if (g.key === "done") return (b.doneAt || 0) - (a.doneAt || 0) || b.id - a.id; // 完了した順(新しいものが上)。日付は無視
       if (byDateOnly) {
         if (a.routine || b.routine) { if (!a.routine) return 1; if (!b.routine) return -1; return a.routine.localeCompare(b.routine); }
         const da = dueDate(a.due), db = dueDate(b.due);
@@ -1130,7 +1131,7 @@ $("list").addEventListener("pointerdown", (e) => {
   if (!e.target.closest(".grip")) return; // 三本線のところだけで並び替え(本文は選択・コピーできる)
   const ul = li.parentNode;
   if (ul.children.length < 2) return;
-  if (!["today", "done"].includes(li.closest("section").dataset.g)) return; // Week・Later は日付順で固定
+  if (li.closest("section").dataset.g !== "today") return; // Week・Later は日付順で固定
   const d = drag = { li, ul, id: e.pointerId, x: e.clientX, y: e.clientY, grab: 0, on: false, timer: 0, touch: e.pointerType !== "mouse" };
   e.preventDefault();
   if (d.touch) start(d);
