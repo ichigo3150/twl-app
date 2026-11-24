@@ -1085,6 +1085,7 @@ function setRoutine(on) {
 }
 $("rt").onclick = () => setRoutine(!$("form").classList.contains("routine"));
 keepCaretAfterComma($("link"));
+$("input").setAttribute("enterkeyhint", "send"); // iPhone のキーボードの改行キーを「送信」にして、押すとカードを作る(キーボードは閉じない)
 // 日付ボタンにフォーカスがある状態(日付を選んだ直後など)で Enter を押したら、そのまま追加する。
 $("form").addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !IME(e) && e.target.classList && e.target.classList.contains("dtext")) {
@@ -1094,7 +1095,7 @@ $("form").addEventListener("keydown", (e) => {
 for (const id of ["input", "due", "link", "rtime"]) {
   $(id).addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !IME(e)) {
-      if (id === "input" && (NL(e, $("input")) || e.shiftKey || COARSE())) return; // 改行
+      if (id === "input" && (NL(e, $("input")) || e.shiftKey)) return; // 改行(Cmd/Ctrl+Enter、Shift+Enter)。iPhone の改行キーは、カードを作る
       e.preventDefault(); addTodo();
     }
   });
