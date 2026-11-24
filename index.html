@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f8fbf8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="twl">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>twl</title>
 <style>
 /* Inter(英数字のみ。日本語は下の和文フォントで表示) */
@@ -1102,7 +1109,7 @@ document.addEventListener("touchstart", () => { lastTouch = Date.now(); }, { pas
 $("input").addEventListener("blur", (e) => {
   if (!matchMedia("(pointer:coarse)").matches) return;
   if (e.relatedTarget || Date.now() - lastTouch < 600) return;
-  if ($("input").value.trim()) addTodo(true);
+  if ($("input").value.trim()) addTodo(); // 作ったあと、すぐにまた入力欄にカーソルを戻す(続けて書ける)
 });
 
 // ---- カードのドラッグ&ドロップで並び替え(同じグループの中) ----
@@ -1413,6 +1420,27 @@ dateField($("due"));
 timeField($("rtime"));
 setDue(todayStr());
 render();
+
+// ---- オフラインで開く・自動で新しい版に切り替える(ホーム画面/Web 版のみ。アプリ内のファイル表示では動かさない) ----
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  try {
+    const had = !!navigator.serviceWorker.controller; // 初めての登録のときは、切り替えの開き直しはしない
+    let reloading = false;
+    navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then((reg) => {
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });
+    }).catch(() => {});
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!had || reloading) return;
+      const go = () => {
+        let busy = editingId !== null || !!document.querySelector(".dm") || $("input").value.trim() || $("link").value.trim();
+        try { if (drag) busy = true; } catch (e) {}
+        if (busy) { setTimeout(go, 2000); return; } // 入力中・編集中は、終わるまで待つ
+        reloading = true; location.reload();
+      };
+      go();
+    });
+  } catch (e) {}
+}
 </script>
 </body>
 </html>
