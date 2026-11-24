@@ -1135,13 +1135,17 @@ function autoScroll(d) {
     if (drag !== d || !d.on) return;
     const sec = d.li.closest("section");
     const own = sec && /(auto|scroll)/.test(getComputedStyle(sec).overflowY) && sec.scrollHeight > sec.clientHeight + 1;
+    // 持っているカードの上端が見出し(Today など)や入力ボックスの近くに来たら、上へ。下端がバーや画面の下に近づいたら、下へ。
     let top = 0, bot = innerHeight;
-    if (own) { const r = sec.getBoundingClientRect(); top = r.top; bot = r.bottom; }
-    else { const bar = document.querySelector(".bar"); if (bar && getComputedStyle(bar).position === "fixed") bot = bar.getBoundingClientRect().top; }
-    const Z = 80, y = d.y;
+    if (own) { const r = sec.getBoundingClientRect(), h = sec.querySelector("h2"); top = h ? h.getBoundingClientRect().bottom : r.top; bot = r.bottom; }
+    else {
+      const f = $("form"); if (f && getComputedStyle(f).position === "sticky") top = f.getBoundingClientRect().bottom + 8;
+      const bar = document.querySelector(".bar"); if (bar && getComputedStyle(bar).position === "fixed") bot = bar.getBoundingClientRect().top;
+    }
+    const cr = d.li.getBoundingClientRect(), Z = 40;
     let v = 0;
-    if (y < top + Z) v = -Math.min(1, (top + Z - y) / Z) * 16;
-    else if (y > bot - Z) v = Math.min(1, (y - (bot - Z)) / Z) * 16;
+    if (cr.top < top + Z) v = -(3 + Math.min(1, (top + Z - cr.top) / 50) * 15);
+    else if (cr.bottom > bot - Z) v = 3 + Math.min(1, (cr.bottom - (bot - Z)) / 50) * 15;
     if (v) { if (own) sec.scrollTop += v; else window.scrollBy(0, v); place(d, d.y); }
     requestAnimationFrame(tick);
   };
