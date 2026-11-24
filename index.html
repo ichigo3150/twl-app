@@ -277,7 +277,14 @@ const save = () => { rawSave(); if (FIREBASE_CONFIG) trackLocal(); };
 
 // ================= クラウド同期(Firebase + Google ログイン) =================
 // Firebase の「ウェブアプリ」の設定(firebaseConfig)を、ここに貼る。null のあいだは、同期の機能は出ない(これまでどおりこの端末だけで動く)。
-const FIREBASE_CONFIG = null;
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAvv_PqAk7qZ1PcNLBuhsCxWKEJkFMkuE4",
+  authDomain: "twl-app-6d298.firebaseapp.com",
+  projectId: "twl-app-6d298",
+  storageBucket: "twl-app-6d298.firebasestorage.app",
+  messagingSenderId: "582178858026",
+  appId: "1:582178858026:web:fdb086ae197ff29bcd4f53"
+};
 const SYNC_KEY = "twl-sync-v1", SYNC_ON = "twl-sync-on";
 // meta: snap=最後に見たタスクの中身 / u=タスクごとの更新時刻 / tomb=消したタスクの時刻 / pending=まだ送っていないタスク
 let meta = { snap: {}, u: {}, tomb: {}, pending: {} };
