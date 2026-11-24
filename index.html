@@ -1265,7 +1265,7 @@ document.addEventListener("click", (e) => { if (dragClickBlock && !e.target.clos
       dragClickBlock = true; setTimeout(() => { dragClickBlock = false; }, 400);
       const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
       confirmDelete(li.dataset.id);
-    }, 700);
+    }, 450);
   });
   document.addEventListener("pointermove", (e) => {
     if (lp && e.pointerId === lp.id && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 8) clear();
