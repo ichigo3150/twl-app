@@ -49,7 +49,6 @@ body.dragging,body.dragging *{cursor:grabbing!important}
 li.dragging{z-index:5;box-shadow:0 8px 24px rgba(60,70,80,.18);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));cursor:grabbing;transition:none;user-select:none;-webkit-user-select:none}
 @media (pointer:coarse){li:not(.editing){-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}}
 @media (max-width:640px){#list{touch-action:pan-y}}
-#calview{touch-action:pan-y}
 li.done{background:color-mix(in srgb,var(--surface) 55%,transparent)}
 li input[type=checkbox]{appearance:none;-webkit-appearance:none;width:18px;height:18px;margin:2px 0 0;flex:none;cursor:pointer;
   border:1.5px solid var(--muted);border-radius:50%;background:var(--surface)}
@@ -104,8 +103,7 @@ li.hasdate{padding-top:30px}
   .links{transition:grid-template-rows .2s ease,margin-top .2s ease}
   .links > div{transition:visibility 0s linear .2s}
   .links.open > div{transition-delay:0s}
-  .acc .chev{transition:transform .2s ease}
-}
+  .acc .chev{transition:transform .2s ease}}
 .meta a:hover{text-decoration:underline}
 .editbox{display:flex;flex-direction:column;gap:6px}
 .editbox .btns{display:flex;gap:6px}
@@ -169,81 +167,29 @@ button.ghost{border:0;background:transparent;color:var(--muted);font-size:12px;t
 .cwrap{position:relative;display:block}
 .cwrap input{caret-color:var(--accent)}
 .endcaret{position:absolute;top:50%;width:8px;height:1.4em;margin-top:-.7em;background:var(--accent);opacity:.55;border-radius:2px;pointer-events:none}
-@media (prefers-reduced-motion: no-preference){ .endcaret{animation:blink 1s steps(1) infinite} }
+@media (prefers-reduced-motion: no-preference){ .endcaret{animation:blink 1s steps(1) infinite}}
 @keyframes blink{50%{opacity:0}}
 
-/* ---- 月のカレンダー表示(日曜はじまり) ---- */
-.topbar{display:flex;justify-content:flex-end;height:24px;margin:0 0 6px}
-#viewbtn{position:relative;width:52px;height:26px;padding:0;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--muted);cursor:pointer;display:block}
-#viewbtn svg{position:absolute;top:5px;width:14px;height:14px;z-index:1;transition:color .2s}
-#viewbtn .i1{left:7px}#viewbtn .i2{right:7px}
-#viewbtn::before{content:"";position:absolute;top:2px;left:4px;width:20px;height:20px;border-radius:50%;background:color-mix(in srgb,var(--accent) 16%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 55%,var(--line));box-sizing:border-box;transition:transform .22s cubic-bezier(.4,.1,.2,1)}
-#viewbtn[aria-pressed=true]::before{transform:translateX(22px)}
-#viewbtn .i1{color:var(--ink)}#viewbtn[aria-pressed=true] .i1{color:var(--muted)}
-#viewbtn[aria-pressed=true] .i2{color:var(--ink)}#viewbtn:not([aria-pressed=true]) .i2{color:var(--muted)}
-#calview{display:none}
-body.cal #calview{display:flex;flex-direction:column;flex:1;gap:10px;padding-top:28px}
-body.cal #form,body.cal #list,body.cal .bar{display:none!important}
-body.cal main{max-width:1180px;padding-bottom:24px}
-.chead{display:flex;align-items:center;justify-content:center;gap:10px}
-.chead .ctitle{font-size:20px;letter-spacing:.02em;min-width:5.5em;text-align:center;font-weight:600;color:var(--ink)}
-.chead button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;padding:2px 10px;font-size:14px;line-height:1.3;cursor:pointer}
-.chead button:hover{color:var(--ink)}
-@media (max-width:700px) and (pointer:coarse){.chead button{display:none}}
-.ctrow{display:flex;justify-content:center;margin-top:-10px}
-.ctrow .ctoday{border:0;background:transparent;color:var(--accent);opacity:.8;border-radius:6px;padding:1px 8px;font-size:10px;letter-spacing:.04em;line-height:1.3;cursor:pointer}
-.ctrow .ctoday:hover{opacity:1}
-.cstrip{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-.cwd,.cgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
-.cwd{margin-top:12px;text-align:center;font-size:12px;color:var(--muted)}
-.cwd span{justify-self:center;width:22px;height:22px;line-height:20px;box-sizing:border-box;border:1px solid transparent;border-radius:50%;text-align:center}
-.cwd span.now{color:var(--ink);font-weight:700}
-.cgrid{flex:none;grid-auto-rows:96px;border:1px solid #9ea1a3;border-radius:12px;background:var(--surface)}
-.cc:first-child{border-top-left-radius:12px}
-.cc:nth-child(7){border-top-right-radius:12px}
-.cc.lastrow:nth-child(7n+1){border-bottom-left-radius:12px}
-.cc:last-child{border-bottom-right-radius:12px}
-.cc{min-width:0;padding:4px 5px 6px;position:relative;border-right:1px solid #9ea1a3;border-bottom:1px solid #9ea1a3}
-.cc:nth-child(7n){border-right:0}
-.cc.lastrow{border-bottom:0}
-.cc.out{background:color-mix(in srgb,#9fa0a0 30%,transparent)}
-.cc.out .cn{opacity:.8}
-.cnrow{display:flex;align-items:center;gap:4px;min-width:0}
-.hn{font-size:9px;color:var(--accent-text);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.cc.hol .cn{color:var(--accent-text)}
-.cc.out .hn{opacity:.8}
-.cc.out.hol .cn{opacity:.8}
-@media (max-width:700px){.hn{display:none}.cgrid{grid-auto-rows:78px}
+#sync{display:none;position:fixed;top:6px;right:8px;z-index:12;width:28px;height:28px;padding:0;border:0;border-radius:8px;background:transparent;color:var(--muted);opacity:.5;align-items:center;justify-content:center;cursor:pointer}
+#sync.on{display:flex}
+body.hassync main{padding-top:32px}
+#sync[data-s=ok]{color:var(--accent-text);opacity:1}
+#sync[data-s=sync]{color:var(--accent-text);opacity:.9}
+#sync[data-s=sync] svg{animation:syncpulse 1.2s ease-in-out infinite}
+#sync[data-s=off]{opacity:.8}
+#sync[data-s=err]{color:var(--danger);opacity:1}
+@keyframes syncpulse{50%{opacity:.35}}
+@media (max-width:640px){
+  #form{position:sticky;top:8px;z-index:10;background:transparent;border-color:transparent}
+  #form::before{content:"";position:absolute;left:-16px;right:-16px;top:-40px;bottom:-14px;background:var(--bg);z-index:-2}
+  #form::after{content:"";position:absolute;inset:-1px;background:var(--surface);border:1px solid var(--line);border-radius:12px;z-index:-1;pointer-events:none}
 }
-.ci{display:flex;flex-direction:column;gap:3px;min-width:0}
-.cn{align-self:flex-start;width:20px;height:20px;line-height:18px;padding:0;box-sizing:border-box;text-align:center;font-size:12px;color:var(--muted);border:1px solid transparent;border-radius:999px}
-.cc.today .cn{color:var(--ink);font-weight:700;background:color-mix(in srgb,var(--accent) 16%,var(--surface));border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
-.chip{display:block;width:100%;min-width:0;text-align:left;padding:1px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:11.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-.cc .chip{background:var(--bg)}
-.chip:hover{border-color:var(--accent)}
-.cc .chip.hl,.chip.hl{background:color-mix(in srgb,var(--accent) 30%,var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--surface))}
-.chip.done{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--accent)}
-.cstrip .chip{width:auto;max-width:100%}
-.more{align-self:flex-start;height:16px;padding:0 4px;border:0;background:none;color:var(--muted);font-size:11px;cursor:pointer}
-.more:hover{color:var(--ink)}
-/* 入りきらない日は、蛇腹のように下へ広げて見せる(カレンダーの高さは変えない) */
-.cc.open{z-index:6}
-.cc.open .ci{position:absolute;top:0;left:0;width:100%;box-sizing:border-box;min-height:100%;padding:4px 5px 6px;background:var(--surface);border:1px solid var(--accent);border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
-.cc.open:nth-child(7n+4) .ci,.cc.open:nth-child(7n+5) .ci,.cc.open:nth-child(7n+6) .ci,.cc.open:nth-child(7n) .ci{left:auto;right:0}
-@media (max-width:700px){.cc.open .ci{width:172px}
-  .cc{padding:3px 3px 4px}
-  .ci{gap:2px}
-  .chip{font-size:8.5px;line-height:1.15;padding:0 3px;border-radius:3px}
-  .more{height:12px;padding:0 2px;font-size:9px}
-}
-
 .dm{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.35);display:flex;align-items:flex-start;justify-content:center;padding:12vh 16px 0}
 .dm .box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:min(420px,100%);display:flex;flex-direction:column;gap:6px;font-size:13px}
 .dm textarea{padding:6px 10px;font-size:13px}
 .dm button{padding:5px 12px}
 .dm .dl{font-size:12px;color:var(--muted)}
 .dm .row{display:flex;gap:8px;justify-content:flex-end}
-.cc{cursor:pointer}
 li{-webkit-touch-callout:none}
 li{padding-right:34px}
 li .hlbtn{position:absolute;right:3px;top:3px;width:14px;height:13px;padding:0;border:0;border-radius:3px 8px 3px 3px;background:color-mix(in srgb,var(--accent) 40%,transparent);cursor:pointer}
@@ -253,6 +199,7 @@ li .grip svg{display:block;pointer-events:none}
 li .hlbtn::before{content:"";position:absolute;inset:-5px -5px 0 -5px}
 li:only-child .grip,section[data-g=week] .grip,section[data-g=later] .grip,li.editing .grip{display:none}
 li.hl{background:color-mix(in srgb,var(--accent) 30%,var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--surface))}
+li.hl .meta{border-top-color:#a9adaf}
 li.hl .hlbtn{background:color-mix(in srgb,var(--accent) 85%,transparent)}
 .dm.near{background:transparent;display:block;padding:0}
 .dm.near .box{position:fixed;width:min(260px,calc(100vw - 24px));box-shadow:0 6px 24px rgba(0,0,0,.18)}
@@ -265,8 +212,8 @@ button.danger{background:var(--surface);color:var(--danger);border-color:var(--d
 </style>
 </head>
 <body>
+<button type="button" id="sync" aria-label="クラウド同期" data-s="out"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5a4.25 4.25 0 0 1-.5 8.5z"/></svg></button>
 <main>
-  <div class="topbar"><button type="button" id="viewbtn" role="switch" aria-checked="false" aria-pressed="false" aria-label="カレンダー表示" title="カレンダーで見る"><svg class="i1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="7" rx="2.2"/><rect x="3.5" y="13.5" width="17" height="7" rx="2.2"/></svg><svg class="i2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button></div>
 
   <div id="form">
     <textarea id="input" rows="1" placeholder="" autocomplete="off" aria-label="新しいタスク"></textarea>
@@ -283,8 +230,6 @@ button.danger{background:var(--surface);color:var(--danger);border-color:var(--d
     </div>
     <p class="err" id="err" role="alert"></p>
   </div>
-
-  <div id="calview"></div>
   <div id="list"></div>
 
 </main>
@@ -320,7 +265,161 @@ document.addEventListener("compositionend", () => { lastCompEnd = Date.now(); },
 const IME = (e) => e.isComposing || e.keyCode === 229 || Date.now() - lastCompEnd < 120;
 const NL = (e, el) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && !IME(e)) { e.preventDefault(); const a = el.selectionStart, b = el.selectionEnd; el.setRangeText("\n", a, b, "end"); el.dispatchEvent(new Event("input")); return true; } return false; };
 const COARSE = () => matchMedia("(pointer:coarse)").matches;
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch (e) {} };
+const rawSave = () => { try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch (e) {} };
+const save = () => { rawSave(); if (FIREBASE_CONFIG) trackLocal(); };
+
+// ================= クラウド同期(Firebase + Google ログイン) =================
+// Firebase の「ウェブアプリ」の設定(firebaseConfig)を、ここに貼る。null のあいだは、同期の機能は出ない(これまでどおりこの端末だけで動く)。
+const FIREBASE_CONFIG = null;
+const SYNC_KEY = "twl-sync-v1", SYNC_ON = "twl-sync-on";
+// meta: snap=最後に見たタスクの中身 / u=タスクごとの更新時刻 / tomb=消したタスクの時刻 / pending=まだ送っていないタスク
+let meta = { snap: {}, u: {}, tomb: {}, pending: {} };
+try { const m = JSON.parse(localStorage.getItem(SYNC_KEY)); if (m && m.snap) meta = m; } catch (e) {}
+const saveMeta = () => { try { localStorage.setItem(SYNC_KEY, JSON.stringify(meta)); } catch (e) {} };
+const fb = { ready: null, user: null, m: null, Au: null, db: null, auth: null, unsub: null };
+let syncState = "out"; // out(ログインしていない) / sync(同期中) / ok(同期ずみ) / off(オフライン) / err(エラー)
+
+// タスクの変更を見つけて、更新時刻を付ける(消したものは「消した印」を残す)
+function trackLocal() {
+  const now = Date.now(), seen = new Set(); let ch = false;
+  for (const t of todos) {
+    const id = String(t.id); seen.add(id);
+    const str = JSON.stringify(t);
+    if (meta.snap[id] !== str) { meta.snap[id] = str; meta.u[id] = now; meta.pending[id] = 1; delete meta.tomb[id]; ch = true; }
+  }
+  for (const id of Object.keys(meta.snap)) {
+    if (!seen.has(id)) { delete meta.snap[id]; delete meta.u[id]; meta.tomb[id] = now; meta.pending[id] = 1; ch = true; }
+  }
+  if (ch) { saveMeta(); schedulePush(); }
+}
+
+let pushT = null, pushing = false;
+function schedulePush(ms) { clearTimeout(pushT); pushT = setTimeout(push, ms || 600); }
+async function push() {
+  if (!fb.user || pushing) return;
+  const ids = Object.keys(meta.pending);
+  if (!ids.length) { if (syncState !== "off") setSync("ok"); return; }
+  pushing = true; setSync("sync");
+  let failed = false;
+  try {
+    for (let i = 0; i < ids.length; i += 400) {
+      const batch = fb.m.writeBatch(fb.db), sent = {};
+      for (const id of ids.slice(i, i + 400)) {
+        const ref = fb.m.doc(fb.db, "users", fb.user.uid, "tasks", id);
+        const t = todos.find(x => String(x.id) === id);
+        if (t) { batch.set(ref, { i: Number(id), d: JSON.stringify(t), u: meta.u[id] || Date.now(), del: false }); sent[id] = meta.u[id]; }
+        else if (meta.tomb[id]) { batch.set(ref, { i: Number(id), d: "", u: meta.tomb[id], del: true }); sent[id] = meta.tomb[id]; }
+        else delete meta.pending[id];
+      }
+      await batch.commit();
+      for (const id in sent) if ((meta.u[id] || meta.tomb[id]) === sent[id]) delete meta.pending[id];
+    }
+    saveMeta();
+  } catch (e) { failed = true; console.warn("sync push", e); setSync(navigator.onLine ? "err" : "off"); }
+  pushing = false;
+  if (failed) schedulePush(15000);
+  else if (Object.keys(meta.pending).length) schedulePush();
+  else setSync("ok");
+}
+
+// 他の端末(クラウド)の変更を取り込む。新しいほうが勝つ。
+function applyRemote(docs) {
+  let changed = false;
+  for (const r of docs) {
+    if (!r || typeof r.i !== "number") continue;
+    const id = String(r.i), lu = Math.max(meta.u[id] || 0, meta.tomb[id] || 0);
+    if (r.u > lu) {
+      if (r.del) { todos = todos.filter(x => String(x.id) !== id); delete meta.snap[id]; delete meta.u[id]; meta.tomb[id] = r.u; }
+      else {
+        let t; try { t = JSON.parse(r.d); } catch (e) { continue; }
+        if (!Array.isArray(t.links)) t.links = [];
+        const k = todos.findIndex(x => String(x.id) === id);
+        if (k >= 0) todos[k] = t; else todos.push(t);
+        meta.snap[id] = JSON.stringify(t); meta.u[id] = r.u; delete meta.tomb[id];
+      }
+      delete meta.pending[id]; changed = true;
+    } else if (r.u < lu) { meta.pending[id] = 1; }
+  }
+  if (changed) { rawSave(); renderSoon(); }
+  saveMeta();
+  if (Object.keys(meta.pending).length) schedulePush(200);
+}
+function renderSoon() {
+  let busy = editingId !== null || !!document.querySelector(".dm");
+  try { if (drag) busy = true; } catch (e) {}
+  if (busy) { setTimeout(renderSoon, 1200); return; }
+  render();
+}
+
+function setSync(s) {
+  syncState = s;
+  const b = $("sync"); if (!b) return;
+  b.dataset.s = s;
+  b.title = { out: "クラウド同期: ログインする", sync: "同期中…", ok: "同期ずみ", off: "オフライン(つながると同期します)", err: "同期できませんでした" }[s] || "";
+}
+function onUser(user) {
+  fb.user = user;
+  if (fb.unsub) { fb.unsub(); fb.unsub = null; }
+  if (!user) { setSync("out"); return; }
+  try { localStorage.setItem(SYNC_ON, "1"); } catch (e) {}
+  setSync(navigator.onLine ? "sync" : "off");
+  trackLocal();
+  const F = fb.m;
+  fb.unsub = F.onSnapshot(F.collection(fb.db, "users", user.uid, "tasks"), (snap) => {
+    applyRemote(snap.docChanges().filter(c => c.type !== "removed").map(c => c.doc.data()));
+    schedulePush(200);
+  }, (e) => { console.warn("sync listen", e); setSync(navigator.onLine ? "err" : "off"); });
+}
+function loadFb() {
+  if (fb.ready) return fb.ready;
+  return fb.ready = (async () => {
+    const B = "https://www.gstatic.com/firebasejs/10.14.1/";
+    const [A, Au, F] = await Promise.all([import(B + "firebase-app.js"), import(B + "firebase-auth.js"), import(B + "firebase-firestore.js")]);
+    const app = A.initializeApp(FIREBASE_CONFIG);
+    fb.m = F; fb.Au = Au; fb.auth = Au.getAuth(app); fb.db = F.getFirestore(app);
+    Au.getRedirectResult(fb.auth).catch(() => {});
+    Au.onAuthStateChanged(fb.auth, onUser);
+  })().catch((e) => { fb.ready = null; setSync(navigator.onLine ? "err" : "off"); console.warn("sync load", e); });
+}
+function syncToast(msg) {
+  document.querySelectorAll(".toast").forEach(n => n.remove());
+  const n = document.createElement("div"); n.className = "toast"; n.textContent = msg; document.body.appendChild(n);
+  setTimeout(() => n.remove(), 2200);
+}
+async function signIn() {
+  if (!fb.auth) { syncToast("準備中です。少し待ってからもう一度"); loadFb(); return; }
+  const Au = fb.Au;
+  try { await Au.signInWithPopup(fb.auth, new Au.GoogleAuthProvider()); }
+  catch (e) {
+    const c = e && e.code;
+    if (c === "auth/popup-blocked" || c === "auth/operation-not-supported-in-this-environment") { try { await Au.signInWithRedirect(fb.auth, new Au.GoogleAuthProvider()); } catch (e2) { syncToast("ログインできませんでした"); } }
+    else if (c !== "auth/popup-closed-by-user" && c !== "auth/cancelled-popup-request") syncToast("ログインできませんでした");
+  }
+}
+function syncMenu() {
+  if (document.querySelector(".dm")) return;
+  const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  const m = mk("div", "dm"), box = mk("div", "box"), row = mk("div", "row");
+  const cl = mk("button", "ghost", "Close"); cl.type = "button";
+  const out = mk("button", "danger", "Sign out"); out.type = "button";
+  const close = () => m.remove();
+  cl.onclick = close; m.onclick = (e) => { if (e.target === m) close(); };
+  out.onclick = async () => { try { localStorage.removeItem(SYNC_ON); await fb.Au.signOut(fb.auth); } catch (e) {} close(); };
+  m.onkeydown = (e) => { if (e.key === "Escape") close(); };
+  row.append(cl, out);
+  const st = { sync: "同期中…", ok: "同期ずみ", off: "オフライン", err: "同期できませんでした", out: "" }[syncState];
+  box.append(mk("div", "q", "クラウド同期"), mk("div", "qt", (fb.user && fb.user.email || "") + (st ? " ・ " + st : "")), row);
+  m.appendChild(box); document.body.appendChild(m); cl.focus();
+}
+if (FIREBASE_CONFIG && location.protocol !== "file:") {
+  document.addEventListener("DOMContentLoaded", () => {
+    const b = $("sync"); b.classList.add("on"); document.body.classList.add("hassync"); setSync("out");
+    b.onclick = () => { if (fb.user) syncMenu(); else signIn(); };
+    if (navigator.onLine) loadFb();
+    addEventListener("online", () => { if (!fb.ready) loadFb(); else if (fb.user) { setSync("sync"); schedulePush(200); } });
+    addEventListener("offline", () => { if (fb.user) setSync("off"); });
+  });
+}
 
 // リンクを検証して正規化する。空文字は ""、不正なら null を返す。
 function normalizeLink(raw) {
@@ -887,201 +986,15 @@ function makeItem(t) {
 
 
 // ---- 月のカレンダー表示 ----
-let calOpenKey = null; // 蛇腹で広げている日(YYYY-MM-DD)
-let view = "list"; // "list"(いつもの一覧) か "cal"(月のカレンダー)
-let calMonth = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
 
 function ymdOf(d) {
   const pad = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-function setView(v) {
-  view = v;
-  calOpenKey = null;
-  closePicker();
-  document.body.classList.toggle("cal", v === "cal");
-  $("viewbtn").setAttribute("aria-pressed", String(v === "cal")); $("viewbtn").setAttribute("aria-checked", String(v === "cal"));
-  $("viewbtn").title = v === "cal" ? "一覧にもどる" : "カレンダーで見る";
-  if (v === "cal") renderCal(); else render();
-}
 
-// 広げた日の外を押したら、閉じる
-document.addEventListener("click", (e) => {
-  if (view !== "cal" || !calOpenKey || e.target.closest(".cc.open")) return;
-  calOpenKey = null;
-  renderCal();
-});
 
-// カレンダーのカードを押したら、一覧にもどって、そのカードを編集できる状態にする
-function openFromCal(t) {
-  view = "list";
-  document.body.classList.remove("cal");
-  $("viewbtn").setAttribute("aria-pressed", "false");
-  $("viewbtn").title = "カレンダーで見る";
-  current = groupOf(t);
-  editingId = t.id;
-  render();
-}
 
-// ---- 日本の祝日(計算で求める。振替休日・国民の休日も含む) ----
-const holCache = {};
-function jpHolidays(y) {
-  if (holCache[y]) return holCache[y];
-  const map = {};
-  const pad = (n) => String(n).padStart(2, "0");
-  const key = (m, d) => `${y}-${pad(m)}-${pad(d)}`;
-  const add = (m, d, name) => { map[key(m, d)] = name; };
-  const nthMon = (m, n) => { const first = new Date(y, m - 1, 1).getDay(); return 1 + ((8 - first) % 7) + (n - 1) * 7; };
-  const eq = (base) => Math.floor(base + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4));
-  if (y >= 1949) add(1, 1, "元日");
-  if (y >= 2000) add(1, nthMon(1, 2), "成人の日");
-  if (y >= 2020) add(2, 11, "建国記念の日");
-  if (y >= 2020) add(2, 23, "天皇誕生日");
-  add(3, eq(20.8431), "春分の日");
-  if (y >= 2007) add(4, 29, "昭和の日");
-  add(5, 3, "憲法記念日");
-  if (y >= 2007) add(5, 4, "みどりの日");
-  add(5, 5, "こどもの日");
-  if (y === 2020) { add(7, 23, "海の日"); add(7, 24, "スポーツの日"); add(8, 10, "山の日"); }
-  else if (y === 2021) { add(7, 22, "海の日"); add(7, 23, "スポーツの日"); add(8, 8, "山の日"); }
-  else {
-    add(7, nthMon(7, 3), "海の日");
-    if (y >= 2016) add(8, 11, "山の日");
-    add(10, nthMon(10, 2), y >= 2020 ? "スポーツの日" : "体育の日");
-  }
-  add(9, nthMon(9, 3), "敬老の日");
-  add(9, eq(23.2488), "秋分の日");
-  add(11, 3, "文化の日");
-  add(11, 23, "勤労感謝の日");
-  // 国民の休日: 前後が祝日にはさまれた平日(9月)
-  for (let d = 1; d <= 30; d++) {
-    const dt = new Date(y, 8, d);
-    if (map[key(9, d)] || dt.getDay() === 0 || dt.getDay() === 1) continue;
-    if (map[key(9, d - 1)] && map[key(9, d + 1)]) map[key(9, d)] = "国民の休日";
-  }
-  // 振替休日: 日曜の祝日は、次の祝日でない日が休み
-  for (const k of Object.keys(map).sort()) {
-    const dt = new Date(k + "T00:00:00");
-    if (dt.getDay() !== 0 || map[k] === "振替休日") continue;
-    const n = new Date(dt);
-    do { n.setDate(n.getDate() + 1); } while (map[ymdOf(n)]);
-    if (n.getFullYear() === y) map[ymdOf(n)] = "振替休日";
-  }
-  return (holCache[y] = map);
-}
-
-function renderCal() {
-  const el = $("calview");
-  el.innerHTML = "";
-  const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
-  const chipFor = (t, label) => {
-    const b = mk("button", "chip" + (t.done ? " done" : "") + (t.hl ? " hl" : ""), label || t.text);
-    b.type = "button";
-    b.title = t.text;
-    b.onclick = () => openFromCal(t);
-    return b;
-  };
-
-  // 月の切り替え
-  const head = mk("div", "chead");
-  const prev = mk("button", "", "‹"); prev.type = "button"; prev.setAttribute("aria-label", "前の月");
-  const next = mk("button", "", "›"); next.type = "button"; next.setAttribute("aria-label", "次の月");
-  prev.onclick = () => { calOpenKey = null; calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); };
-  next.onclick = () => { calOpenKey = null; calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); };
-  head.append(prev, mk("span", "ctitle", `${calMonth.getFullYear()}.${calMonth.getMonth() + 1}`), next);
-  el.appendChild(head);
-  // 今月にもどるボタン(見出しの下)
-  const trow = mk("div", "ctrow");
-  const today = mk("button", "ctoday", "Today"); today.type = "button";
-  today.onclick = () => { calOpenKey = null; const d = new Date(); calMonth = new Date(d.getFullYear(), d.getMonth(), 1); renderCal(); };
-  trow.appendChild(today);
-  el.appendChild(trow);
-
-  // 曜日(日曜はじまり)
-  const wd = mk("div", "cwd");
-  const todayCol = new Date().getDay();
-  [..."日月火水木金土"].forEach((c, i) => wd.appendChild(mk("span", i === todayCol ? "now" : "", c)));
-  el.appendChild(wd);
-
-  // 日付ごとのタスク
-  const byDate = {};
-  for (const t of todos) {
-    if (t.routine) continue;
-    const d = dueDate(t.due);
-    if (!d) continue;
-    (byDate[ymdOf(d)] = byDate[ymdOf(d)] || []).push(t);
-  }
-  const y = calMonth.getFullYear(), m = calMonth.getMonth();
-  const lead = new Date(y, m, 1).getDay(); // 日曜からの何日目か(カレンダーは日曜はじまり)
-  const days = new Date(y, m + 1, 0).getDate();
-  const weeks = Math.ceil((lead + days) / 7);
-  const todayKey = todayStr();
-  const grid = mk("div", "cgrid");
-  for (let i = 0; i < weeks * 7; i++) {
-    const d = new Date(y, m, 1 - lead + i);
-    const key = ymdOf(d);
-    const cell = mk("div", "cc" + (d.getMonth() !== m ? " out" : "") + (key === todayKey ? " today" : "") + (i >= (weeks - 1) * 7 ? " lastrow" : ""));
-    const ci = mk("div", "ci");
-    const hol = jpHolidays(d.getFullYear())[key];
-    const nrow = mk("div", "cnrow");
-    nrow.appendChild(mk("span", "cn", String(d.getDate())));
-    if (hol) { cell.classList.add("hol"); cell.title = hol; nrow.appendChild(mk("span", "hn", hol)); }
-    ci.appendChild(nrow);
-    const list = (byDate[key] || []).slice().sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0));
-    const LIM = matchMedia("(max-width:700px)").matches ? 3 : 2; // iPhone は3件まで、Mac は2件まで
-    const open = calOpenKey === key && list.length > LIM;
-    if (open) cell.classList.add("open");
-    // 高さは固定。3件以上の日は、2件+「他N件」にして、押すと全部を広げる
-    for (const t of (list.length > LIM && !open ? list.slice(0, LIM) : list)) ci.appendChild(chipFor(t));
-    if (list.length > LIM) {
-      const more = mk("button", "more", open ? "Close ▴" : "etc ▾");
-      more.type = "button";
-      more.setAttribute("aria-expanded", String(open));
-      more.onclick = (e) => { e.stopPropagation(); calOpenKey = open ? null : key; renderCal(); };
-      ci.appendChild(more);
-    }
-    cell.appendChild(ci);
-    cell.addEventListener("click", (e) => { if (e.target.closest(".chip,.more")) return; openDayAdd(key); });
-    grid.appendChild(cell);
-  }
-  el.appendChild(grid);
-
-  // Routine(毎日くり返すもの)は、日付に置かずに1行にまとめて、カレンダーの下に置く
-  const routines = todos.filter(t => t.routine).sort((a, b) => a.routine.localeCompare(b.routine));
-  if (routines.length) {
-    const strip = mk("div", "cstrip");
-    strip.appendChild(mk("span", "", "Routine"));
-    for (const t of routines) strip.appendChild(chipFor(t, `${t.routine} ${t.text}`));
-    el.appendChild(strip);
-  }
-
-  // カレンダーの下には Routine だけを出す(日付なしのタスクは出さない)
-}
-
-function openDayAdd(key) {
-  if (document.querySelector(".dm")) return;
-  const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
-  const m = mk("div", "dm"); const box = mk("div", "box");
-  const d = new Date(key + "T00:00:00");
-  box.appendChild(mk("div", "dl", `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`));
-  const ta = document.createElement("textarea"); ta.rows = 1; ta.setAttribute("aria-label", "タスク");
-  ta.addEventListener("input", () => autoGrow(ta));
-  const close = () => m.remove();
-  const add = () => {
-    const text = ta.value.trim(); if (!text) { close(); return; }
-    todos.push({ id: Date.now() + Math.random(), text, done: false, due: key, links: [] });
-    save(); close(); render();
-  };
-  m.onclick = (e) => { if (e.target === m) add(); }; // 外側を押すと、入力があれば追加して閉じる
-  ta.onkeydown = (e) => {
-    if (NL(e, ta)) return;
-    if (e.key === "Escape") close();
-    if (e.key === "Enter" && !IME(e) && !e.shiftKey && !COARSE()) { e.preventDefault(); add(); }
-  };
-  box.append(ta); m.appendChild(box); document.body.appendChild(m);
-  ta.focus();
-}
 
 function render() {
   closePicker();
@@ -1096,21 +1009,19 @@ function render() {
     const items = todos.filter(t => groupOf(t) === g.key);
     // 日付の早い順(日付なしは最後)。同じ日付は追加した順(新しいものが下)。
     // Routine のカードは一番上(時間の早い順)
-    const byDateOnly = g.key === "week" || g.key === "later"; // Week・Later は、日付順 → 追加順(古いものが上)
+    const byDateOnly = g.key === "week" || g.key === "later"; // Week・Later は、日付順 → 同じ日なら新しく追加したものが上
     items.sort((a, b) => {
       if (byDateOnly) {
         if (a.routine || b.routine) { if (!a.routine) return 1; if (!b.routine) return -1; return a.routine.localeCompare(b.routine); }
         const da = dueDate(a.due), db = dueDate(b.due);
         if (da && db && da - db) return da - db;
         if (!da !== !db) return da ? -1 : 1;
-        return a.id - b.id;
+        return b.id - a.id;
       }
-      // 並び替えた順(ord)があれば、それを最優先。まだ並び替えていない新しいカードは、その後ろ
-      if (a.ord != null || b.ord != null) { if (a.ord == null) return 1; if (b.ord == null) return -1; return a.ord - b.ord; }
+      // まだ並び替えていない新しいカードは一番上(新しいものが上)。並び替えたカード(ord)は、その後ろで、並び替えた順
+      if (a.ord != null || b.ord != null) { if (a.ord == null) return -1; if (b.ord == null) return 1; return a.ord - b.ord; }
       if (a.routine || b.routine) { if (!a.routine) return 1; if (!b.routine) return -1; return a.routine.localeCompare(b.routine); }
-      const da = dueDate(a.due), db = dueDate(b.due);
-      if (da && db) return da - db;
-      return da ? -1 : db ? 1 : 0;
+      return b.id - a.id;
     });
 
     const sec = document.createElement("section");
@@ -1132,7 +1043,6 @@ function render() {
   }
 
   for (const b of document.querySelectorAll(".bar button")) b.setAttribute("aria-pressed", b.dataset.g === current);
-  if (view === "cal") renderCal();
 }
 
 function addTodo(keepBlur) {
@@ -1152,7 +1062,8 @@ function addTodo(keepBlur) {
   current = groupOf(t); // 追加したタスクが見えるグループに切り替える
   $("input").value = ""; autoGrow($("input")); setDue(todayStr()); $("link").value = ""; setRoutine(false);
   save(); render();
-  if (!keepBlur) $("input").focus();
+  // 作ったあとは、続けて書けるように、カーソルを入力欄に戻す(iPhone・Mac とも)
+  if (!keepBlur) { const f = () => $("input").focus({ preventScroll: true }); f(); requestAnimationFrame(f); setTimeout(f, 60); }
 }
 // 日付(Routine のときは時間)の下のアイコンも、上のボタンと同じく選ぶ画面を開く
 $("cal").onclick = () => {
@@ -1198,7 +1109,7 @@ $("input").addEventListener("blur", (e) => {
 // マウスは少し動かすと、タッチは長押しすると、つかめる。
 let drag = null, dragClickBlock = false;
 $("list").addEventListener("pointerdown", (e) => {
-  if (drag || view === "cal" || (e.pointerType === "mouse" && e.button !== 0)) return;
+  if (drag || (e.pointerType === "mouse" && e.button !== 0)) return;
   const li = e.target.closest("li");
   if (!li || li.classList.contains("editing") || li.classList.contains("completing")) return;
   if (!e.target.closest(".grip")) return; // 三本線のところだけで並び替え(本文は選択・コピーできる)
@@ -1216,6 +1127,25 @@ function start(d) {
   d.li.classList.add("dragging"); document.body.classList.add("dragging");
   try { d.li.setPointerCapture(d.id); } catch (e) {}
   if (navigator.vibrate) navigator.vibrate(8);
+  autoScroll(d);
+}
+// 並び替え中、指(カーソル)が画面の上下の端に近づいたら、その方向へ画面を送る
+function autoScroll(d) {
+  const tick = () => {
+    if (drag !== d || !d.on) return;
+    const sec = d.li.closest("section");
+    const own = sec && /(auto|scroll)/.test(getComputedStyle(sec).overflowY) && sec.scrollHeight > sec.clientHeight + 1;
+    let top = 0, bot = innerHeight;
+    if (own) { const r = sec.getBoundingClientRect(); top = r.top; bot = r.bottom; }
+    else { const bar = document.querySelector(".bar"); if (bar && getComputedStyle(bar).position === "fixed") bot = bar.getBoundingClientRect().top; }
+    const Z = 80, y = d.y;
+    let v = 0;
+    if (y < top + Z) v = -Math.min(1, (top + Z - y) / Z) * 16;
+    else if (y > bot - Z) v = Math.min(1, (y - (bot - Z)) / Z) * 16;
+    if (v) { if (own) sec.scrollTop += v; else window.scrollBy(0, v); place(d, d.y); }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }
 function place(d, y) {
   const li = d.li;
@@ -1312,7 +1242,7 @@ document.addEventListener("click", (e) => { if (dragClickBlock && !e.target.clos
   const clear = () => { if (lp) { clearTimeout(lp.timer); lp = null; } };
   $("list").addEventListener("pointerdown", (e) => {
     clear();
-    if (view === "cal" || (e.pointerType === "mouse" && e.button !== 0)) return;
+    if ((e.pointerType === "mouse" && e.button !== 0)) return;
     const li = e.target.closest("li");
     if (!li || li.classList.contains("editing") || li.classList.contains("completing")) return;
     if (e.target.closest("a, button, input, textarea, .picker, .grip")) return;
@@ -1358,7 +1288,6 @@ function confirmDelete(id) {
 
 // カードやボタンのない背景をクリックしたら、本文の入力欄にカーソルを移す(文字を選択しているときは除く)
 document.addEventListener("click", (e) => {
-  if (view === "cal") return;
   if (e.target.closest("li, #form, .bar, .picker, a, button, input, textarea, select, label")) return;
   const sel = window.getSelection && window.getSelection();
   if (sel && !sel.isCollapsed) return;
@@ -1367,10 +1296,6 @@ document.addEventListener("click", (e) => {
 
 // どこにカーソルがあっても、文字を打ち始めたら本文の入力欄に入れる(日本語入力の1文字目も含む)
 document.addEventListener("keydown", (e) => {
-  if (view === "cal") {
-    if (e.key === "Escape") { if (calOpenKey) { calOpenKey = null; renderCal(); } else setView("list"); }
-    return;
-  }
   if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || IME(e)) return;
   const t = e.target;
   if (t.closest && t.closest("input, textarea, select, [contenteditable], li.editing, .picker")) return;
@@ -1402,20 +1327,18 @@ document.querySelector(".bar").onclick = (e) => {
 // 横スワイプ: 一覧ではグループ(指に合わせて引っ張るように動く)、カレンダーでは月を切り替える
 {
   let sx = 0, sy = 0, st = 0, ok = false, axis = "", busy = false, vw = 390;
-  const isCal = () => document.body.classList.contains("cal");
-  const list = () => document.getElementById(isCal() ? "calview" : "list");
-  const narrowList = () => isCal() || matchMedia("(max-width:640px)").matches;
-  const neighbor = (dir) => { if (isCal()) return 1; const i = GROUPS.findIndex(g => g.key === current) + dir; return i < 0 || i >= GROUPS.length ? -1 : i; };
+  const list = () => document.getElementById("list");
+  const narrowList = () => matchMedia("(max-width:640px)").matches;
+  const neighbor = (dir) => { const i = GROUPS.findIndex(g => g.key === current) + dir; return i < 0 || i >= GROUPS.length ? -1 : i; };
   document.addEventListener("touchstart", (e) => {
     const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); axis = ""; if (!busy) vw = window.innerWidth;
     ok = !busy && e.touches.length === 1 && !document.querySelector(".dm") && editingId === null && !(e.target.closest && e.target.closest("input,textarea,.popup,.picker,.grip"));
   }, { passive: true });
   // 隣のグループを、指の動きに合わせて横から見せる(カレンダー以外)
   let peekEl = null, peekDir = 0;
-  const peekOff = () => { if (peekEl) { peekEl.style.cssText = ""; peekEl = null; } peekDir = 0; const L = list(); if (L && !isCal()) { L.style.position = ""; document.querySelector("main").style.overflowX = ""; } };
+  const peekOff = () => { if (peekEl) { peekEl.style.cssText = ""; peekEl = null; } peekDir = 0; const L = list(); if (L) { L.style.position = ""; document.querySelector("main").style.overflowX = ""; } };
   const peekOn = (dir) => {
     peekOff();
-    if (isCal()) return;
     const i = neighbor(dir); if (i < 0) return;
     const sec = document.querySelector('#list > section[data-g="' + GROUPS[i].key + '"]'); if (!sec) return;
     const L = list(); L.style.position = "relative"; document.querySelector("main").style.overflowX = "clip";
@@ -1437,7 +1360,6 @@ document.querySelector(".bar").onclick = (e) => {
     const tx = neighbor(dir) < 0 ? dx * 0.25 : dx; // 端では重くなる
     L.style.transition = "none";
     L.style.transform = `translateX(${tx}px)`;
-    if (isCal()) L.style.opacity = String(1 - Math.min(Math.abs(tx) / 500, 0.35));
   }, { passive: false });
   document.addEventListener("touchend", (e) => {
     if (!ok || drag) return;
@@ -1453,28 +1375,16 @@ document.querySelector(".bar").onclick = (e) => {
       return;
     }
     busy = true;
-    if (!isCal()) { // 隣のグループがそのまま横から入ってくる
-      L.style.transition = "transform .2s ease-out";
-      L.style.transform = `translateX(${-dir * w}px)`;
-      setTimeout(() => {
-        L.style.transition = "none"; L.style.transform = "";
-        peekOff();
-        current = GROUPS[i].key; render();
-        void L.offsetWidth; L.style.transition = ""; busy = false;
-      }, 210);
-      return;
-    }
-    L.style.transition = "transform .16s ease-in, opacity .16s ease-in";
-    L.style.transform = `translateX(${-dir * w}px)`; L.style.opacity = "0.3";
+  // 隣のグループがそのまま横から入ってくる
+    L.style.transition = "transform .2s ease-out";
+    L.style.transform = `translateX(${-dir * w}px)`;
     setTimeout(() => {
-      calOpenKey = null; calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + dir, 1); renderCal();
-      L.style.transition = "none";
-      L.style.transform = `translateX(${dir * w * 0.6}px)`; L.style.opacity = "0.3";
-      void L.offsetWidth;
-      L.style.transition = "transform .24s cubic-bezier(.2,.8,.2,1), opacity .24s ease";
-      L.style.transform = ""; L.style.opacity = "";
-      setTimeout(() => { L.style.transition = ""; busy = false; }, 260);
-    }, 160);
+      L.style.transition = "none"; L.style.transform = "";
+      peekOff();
+      current = GROUPS[i].key; render();
+      void L.offsetWidth; L.style.transition = ""; busy = false;
+    }, 210);
+    return;
   }, { passive: true });
   document.addEventListener("touchcancel", () => { const L = list(); if (L && axis === "x") { L.style.transition = "transform .2s ease"; L.style.transform = ""; L.style.opacity = ""; setTimeout(peekOff, 220); } }, { passive: true });
 }
@@ -1497,7 +1407,6 @@ window.addEventListener("focus", checkDayChange);
 
 dateField($("due"));
 timeField($("rtime"));
-$("viewbtn").onclick = () => setView(view === "cal" ? "list" : "cal");
 setDue(todayStr());
 render();
 </script>
