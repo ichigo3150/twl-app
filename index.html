@@ -1033,6 +1033,8 @@ function render() {
         if (!da !== !db) return da ? -1 : 1;
         return b.id - a.id;
       }
+      // Routine のカードは常に一番上(時間の早い順)
+      if (a.routine || b.routine) { if (!a.routine) return 1; if (!b.routine) return -1; return a.routine.localeCompare(b.routine); }
       // まだ並び替えていない新しいカードは一番上(新しいものが上)。並び替えたカード(ord)は、その後ろで、並び替えた順
       if (a.ord != null || b.ord != null) { if (a.ord == null) return -1; if (b.ord == null) return 1; return a.ord - b.ord; }
       if (a.routine || b.routine) { if (!a.routine) return 1; if (!b.routine) return -1; return a.routine.localeCompare(b.routine); }
